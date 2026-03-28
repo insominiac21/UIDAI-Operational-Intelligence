@@ -3,87 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geospatial Hub | UIDAI Operational Intelligence</title>
+    <title>Geospatial Intelligence Hub | UIDAI 2026</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         .map-layout {
             display: grid;
-            grid-template-columns: 1fr 350px;
-            height: calc(100vh - 60px);
-            gap: 20px;
+            grid-template-columns: 1fr 380px;
+            height: calc(100vh - 80px);
+            gap: 24px;
+            margin-top: 10px;
         }
-        #map {
-            border-radius: 1rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            background: #f1f5f9;
+        #map-container {
+            background: #0f172a; /* Deep Navy to make vibrant colors pop */
+            border-radius: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        #map-svg {
+            width: 100%;
+            height: 100%;
+            cursor: move;
+        }
+        .district-path {
+            stroke: rgba(255, 255, 255, 0.15);
+            stroke-width: 0.5;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .district-path:hover {
+            stroke: #fff;
+            stroke-width: 1.5;
+            filter: brightness(1.3) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+            cursor: pointer;
         }
         .side-intel-container {
             background: white;
-            border-radius: 1rem;
+            border-radius: 1.5rem;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             overflow-y: auto;
-            padding: 20px;
+            padding: 24px;
         }
-        .intel-placeholder {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            text-align: center;
-        }
-        .legend-abs {
+        .map-legend {
             position: absolute;
             bottom: 30px;
             left: 30px;
-            z-index: 1000;
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            padding: 16px;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            z-index: 100;
         }
+        .legend-item { display: flex; align-items: center; margin-bottom: 6px; font-size: 0.75rem; font-weight: 600; }
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; margin-right: 10px; }
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+        .control-btn {
+            background: rgba(15, 23, 42, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .control-btn:hover { background: var(--primary); }
     </style>
 </head>
 <body style="overflow: hidden;">
     <div class="app-container">
-        <!-- Sidebar -->
+        <!-- Sidebar Navigation -->
         <div class="sidebar">
             <div class="logo">
-                <h1>UIDAI 2026<br><small>Geospatial Engine</small></h1>
+                <h1>UIDAI 2026<br><small>Premium Geo-Engine</small></h1>
             </div>
             <ul class="nav-links">
                 <li><a href="index.html"><i class="fa-solid fa-gauge-high"></i> Overview</a></li>
                 <li><a href="map.html" class="active"><i class="fa-solid fa-earth-asia"></i> Geospatial Hub</a></li>
                 <li><a href="clusters.html"><i class="fa-solid fa-diagram-project"></i> Archetype Intel</a></li>
+                <li><a href="segmentation.html"><i class="fa-solid fa-microscope"></i> Decision Space</a></li>
                 <li><a href="methodology.html"><i class="fa-solid fa-terminal"></i> Methodology</a></li>
             </ul>
         </div>
 
-        <!-- Main Workspace -->
         <main class="main-content">
             <div class="map-layout">
-                <div style="position: relative;">
-                    <div id="map" style="height: 100%;"></div>
+                <div id="map-container">
+                    <svg id="map-svg"></svg>
                     
-                    <div class="legend-abs">
-                        <div style="font-weight: 700; margin-bottom: 8px; font-size: 0.8rem;">PRIORITY DOMAINS</div>
-                        <div class="legend-row"><span class="dot" style="background:#d946ef"></span> Critical (75-100)</div>
-                        <div class="legend-row"><span class="dot" style="background:#8b5cf6"></span> High (50-75)</div>
-                        <div class="legend-row"><span class="dot" style="background:#06b6d4"></span> Standard (25-50)</div>
-                        <div class="legend-row"><span class="dot" style="background:#0d9488"></span> Baseline (0-25)</div>
+                    <div class="map-controls">
+                        <button class="control-btn" id="zoom-in" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+                        <button class="control-btn" id="zoom-out" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+                        <button class="control-btn" id="zoom-reset" title="Reset View"><i class="fa-solid fa-expand"></i></button>
+                    </div>
+
+                    <div class="map-legend">
+                        <div style="font-weight: 800; margin-bottom: 12px; letter-spacing: 1px; font-size: 0.7rem;">PRIORITY DOMAINS</div>
+                        <div class="legend-item"><div class="legend-color" style="background:#d946ef"></div> CRITICAL (75-100)</div>
+                        <div class="legend-item"><div class="legend-color" style="background:#8b5cf6"></div> ELEVATED (50-75)</div>
+                        <div class="legend-item"><div class="legend-color" style="background:#06b6d4"></div> STANDARD (25-50)</div>
+                        <div class="legend-item"><div class="legend-color" style="background:#0d9488"></div> BASELINE (0-25)</div>
                     </div>
                 </div>
 
                 <div class="side-intel-container" id="map-side-intel">
                     <div class="intel-placeholder">
-                        <i class="fa-solid fa-location-crosshairs" style="font-size: 3rem; opacity: 0.2; margin-bottom: 20px;"></i>
-                        <p>Hover over a district node to extract real-time intelligence.</p>
+                        <i class="fa-solid fa-satellite" style="font-size: 3rem; opacity: 0.1; margin-bottom: 24px;"></i>
+                        <h3>Operational Node Intelligence</h3>
+                        <p style="opacity: 0.6; margin-top: 8px;">Select or hover over a regional unit to extract real-time priority analytics.</p>
                     </div>
                 </div>
             </div>
@@ -91,7 +134,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/map.js"></script>
