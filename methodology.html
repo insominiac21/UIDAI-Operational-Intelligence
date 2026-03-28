@@ -3,137 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Methodology | UIDAI Operational Intelligence</title>
+    <title>Methodology | UIDAI Decision Support</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .doc-section {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 1rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            margin-bottom: 2.5rem;
-        }
-        .doc-section h3 {
-            color: var(--dark);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid var(--bg-main);
-            font-size: 1.5rem;
-        }
-        .doc-section p {
-            line-height: 1.7;
-            color: #334155;
-            margin-bottom: 1.25rem;
-        }
-        .method-list {
-            list-style: none;
-            padding: 0;
-        }
-        .method-item {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .method-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--bg-main);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            flex-shrink: 0;
-            font-size: 1.25rem;
-        }
-        code {
-            background: #f1f5f9;
-            padding: 0.2rem 0.4rem;
-            border-radius: 0.25rem;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-    </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
+        <!-- Sidebar Navigation -->
         <div class="sidebar">
-            <h1>UIDAI 2026<br><small style="font-weight: 400; font-size: 0.8rem; color: #94a3b8;">Operational Intelligence</small></h1>
+            <div class="logo">
+                <h1>UIDAI 2026<br><small>Methodology Hub</small></h1>
+            </div>
             <ul class="nav-links">
-                <li><a href="index.html"><i class="fa-solid fa-house" style="margin-right: 12px;"></i> Overview</a></li>
-                <li><a href="map.html"><i class="fa-solid fa-map-location-dot" style="margin-right: 12px;"></i> National Map</a></li>
-                <li><a href="clusters.html"><i class="fa-solid fa-layer-group" style="margin-right: 12px;"></i> Cluster Intel</a></li>
-                <li><a href="priority.html"><i class="fa-solid fa-list-check" style="margin-right: 12px;"></i> Priority Engine</a></li>
-                <li><a href="methodology.html" class="active"><i class="fa-solid fa-microscope" style="margin-right: 12px;"></i> Methodology</a></li>
+                <li><a href="index.html"><i class="fa-solid fa-gauge-high"></i> Overview</a></li>
+                <li><a href="map.html"><i class="fa-solid fa-earth-asia"></i> Geospatial Hub</a></li>
+                <li><a href="clusters.html"><i class="fa-solid fa-diagram-project"></i> Archetype Intel</a></li>
+                <li><a href="segmentation.html"><i class="fa-solid fa-microscope"></i> Decision Space</a></li>
+                <li><a href="methodology.html" class="active"><i class="fa-solid fa-terminal"></i> Methodology</a></li>
             </ul>
         </div>
 
-        <!-- Main Content -->
         <main class="main-content fade-in">
             <header>
-                <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;">Technical Audit</p>
-                <h2>Methodology & Logic</h2>
+                <h2>Methodology & Model Logic</h2>
+                <p style="opacity:0.7;">Technical audit of the data pipeline and decision heuristics.</p>
             </header>
 
-            <div class="doc-section">
-                <h3>Data Normalization Pipeline</h3>
-                <p>To ensure geographical accuracy and join integrity, we implemented a multi-stage normalization pipeline for state and district nomenclature.</p>
-                
-                <div class="method-list" style="margin-top: 2rem;">
-                    <div class="method-item">
-                        <div class="method-icon"><i class="fa-solid fa-font"></i></div>
-                        <div>
-                            <h4 style="margin-bottom: 0.5rem;">State Canonicalization</h4>
-                            <p style="font-size: 0.925rem;">Mapping raw spelling variants (e.g., "Dadra & Nagar Haveli" vs "D.N.H.") to a single standard to prevent fragmentation of metrics at the national level.</p>
-                        </div>
-                    </div>
-                    <div class="method-item">
-                        <div class="method-icon"><i class="fa-solid fa-location-dot"></i></div>
-                        <div>
-                            <h4 style="margin-bottom: 0.5rem;">District Join Resolution</h4>
-                            <p style="font-size: 0.925rem;">Correcting district mismatching between demographic data and operational reports. 147 districts required manual mapping or spelling overrides.</p>
-                        </div>
-                    </div>
+            <div class="grid-2 mt-4" style="gap:2rem;">
+                <div class="glass-panel">
+                    <h3>Operational Priority Index (OPI)</h3>
+                    <p style="margin:15px 0; font-size:0.95rem;">
+                        The OPI is a <strong>weighted composite score (0-100)</strong> used to rank districts for intervention. It accounts for three primary dimensions:
+                    </p>
+                    <ul style="padding-left: 20px; font-size:0.9rem;">
+                        <li><strong>Infrastructural Stress (35%)</strong>: Log-scaled biometric failure rates and update bottlenecks.</li>
+                        <li><strong>Demand Velocity (35%)</strong>: Percent of school-age children (youth_pct) and enrollment trends.</li>
+                        <li><strong>Coverage Deficiency (30%)</strong>: Current enrollment gap relative to projected demographics.</li>
+                    </ul>
+                </div>
+
+                <div class="glass-panel">
+                    <h3>Intelligence Archetypes (Clustering)</h3>
+                    <p style="margin:15px 0; font-size:0.95rem;">
+                        We use <strong>K-Means++ Clustering</strong> to segment districts into 6 distinct profiles. The model is trained on:
+                    </p>
+                    <ul style="padding-left: 20px; font-size:0.9rem;">
+                        <li>Log-scaled Update Load</li>
+                        <li>Log-scaled Biometric Stress</li>
+                        <li>Youth Concentration (0-14 segment)</li>
+                        <li>Absolute Coverage Gap</li>
+                    </ul>
+                    <p style="margin-top:10px; font-size:0.75rem; opacity:0.6;">
+                        *Dimension reduction via UMAP $(x, y)$ is used for spatial visualization.
+                    </p>
                 </div>
             </div>
 
-            <div class="doc-section">
-                <h3>The Intelligence Model</h3>
-                <p>The dashboard is powered by a <strong>K-Means Clustering</strong> algorithm, selected over density-based alternatives for its stability and interpretability in operational contexts.</p>
-                
-                <h4 style="margin: 1.5rem 0 1rem; color: var(--dark); font-size: 1.1rem;">Feature Engineering</h4>
-                <ul style="margin-left: 1.5rem; margin-bottom: 2rem; color: #475569;">
-                    <li style="margin-bottom: 0.75rem;"><code>log_enrol</code>: Normalizes massive variance in district sizes.</li>
-                    <li style="margin-bottom: 0.75rem;"><code>youth_pct</code>: Identifies districts with aging vs. growing demand pools.</li>
-                    <li style="margin-bottom: 0.75rem;"><code>coverage_gap</code>: Calculated as <code>1 - (New Enrollments / Total Population)</code>.</li>
-                    <li style="margin-bottom: 0.75rem;"><code>log_bio_stress</code>: Metrics the failure rate of biometric scanners relative to session volume.</li>
-                </ul>
-
-                <h4 style="margin: 1.5rem 0 1rem; color: var(--dark); font-size: 1.1rem;">Model Comparison Audit</h4>
-                <p>Model selection was based on maximizing the **Silhouette Score** while maintaining a balanced cluster distribution. The final K=6 model provides the best separation between "Stress Anomalies" and "Infrastructure Hubs".</p>
-            </div>
-
-            <div class="doc-section">
-                <h3>Data Quality Controls</h3>
-                <p>Not all districts are included in the Priority Engine. Transparency regarding data quality is central to our decision-support philosophy.</p>
-                
-                <div style="background: #fff7ed; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid #ffedd5;">
-                    <h4 style="color: #9a3412; margin-bottom: 0.75rem;"><i class="fa-solid fa-triangle-exclamation" style="margin-right: 10px;"></i> Exclusion Criteria</h4>
-                    <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">Districts marked as <code>data_issue</code> in the master table are excluded from ranking for the following reasons:</p>
-                    <ul style="font-size: 0.85rem; padding-left: 1.5rem; color: #7c2d12;">
-                        <li>Zero demographic activity joins following normalization.</li>
-                        <li>Anomalous zero-value reports in biometric stress segments.</li>
-                        <li>Districts with >90% missing values in core features.</li>
-                    </ul>
+            <div class="decision-panel mt-4">
+                <h3>Decision Heuristics (DSS Implementation)</h3>
+                <p style="margin-top:10px;">
+                    This platform uses <strong>Tiered Logic</strong> to translate raw priority scores into tactical actions:
+                </p>
+                <div class="grid-3 mt-4" style="gap:15px;">
+                    <div class="reason-tag text-center" style="padding:15px; background:var(--danger); color:white;">OPI > 75: Critical Deployment</div>
+                    <div class="reason-tag text-center" style="padding:15px; background:var(--accent); color:white;">OPI > 50: High-Priority Review</div>
+                    <div class="reason-tag text-center" style="padding:15px; background:var(--secondary); color:white;">OPI > 25: Baseline Optimization</div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Scripts -->
+    <!-- Initialization Support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

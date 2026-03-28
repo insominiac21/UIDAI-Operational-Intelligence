@@ -1,70 +1,73 @@
 /**
- * clusters.js - Cluster Intelligence Logic
- * Handles rendering of cluster archetypes and representative districts.
+ * clusters.js - Intelligence Archetype Profiling
+ * Translates model clusters into actionable operational archetypes.
  */
 
-async function initClustersView() {
-    const representatives = await loadCSV('uidai_cluster_representatives.csv');
-    renderClusters(representatives);
+function initArchetypeView() {
+    renderArchetypeProfiles();
 }
 
-function renderClusters(reps) {
-    const container = document.getElementById('clusters-container');
-    
-    container.innerHTML = State.clusters.map(cluster => {
-        // Find top 3 representatives for this cluster
-        const clusterReps = reps.filter(r => r.cluster_label === cluster.cluster_label).slice(0, 3);
-        
-        return `
-            <div class="glass-panel" style="margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
-                    <div>
-                        <h3 style="color: var(--dark); font-size: 1.5rem;">${cluster.cluster_label}</h3>
-                        <p style="color: var(--primary); font-weight: 600; font-size: 0.9rem;">${cluster.signature}</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <div class="kpi-label">Node count</div>
-                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--dark);">${cluster.size}</div>
-                    </div>
+function renderArchetypeProfiles() {
+    const container = document.getElementById('archetype-container');
+    if (!container) return;
+
+    // Direct mapping from State clusters (loaded from uidai_cluster_summary.csv)
+    container.innerHTML = State.clusters.map(c => `
+        <div class="glass-panel archetype-card fade-in" id="${encodeURIComponent(c.cluster_label)}">
+            <div class="archetype-header">
+                <div>
+                    <h3 style="color:var(--primary); font-size:1.4rem;">${c.cluster_label}</h3>
+                    <div style="font-size:0.8rem; opacity:0.6; margin-top:5px;">${c.n_districts} Managed Operational Nodes</div>
                 </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
-                    <div>
-                        <h4 style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem;">Primary Drivers</h4>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                            ${getClusterBadges(cluster.cluster_label)}
-                        </div>
-                    </div>
-                    <div>
-                        <h4 style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem;">Representative Districts</h4>
-                        <div style="display: flex; gap: 1rem;">
-                            ${clusterReps.map(r => `
-                                <div onclick="navigateToDistrict('${r.district}')" style="background: white; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border); cursor: pointer; flex: 1;">
-                                    <div style="font-weight: 700; font-size: 0.9rem">${capitalize(r.district)}</div>
-                                    <div style="font-size: 0.7rem; color: var(--text-muted)">${capitalize(r.state_clean)}</div>
-                                </div>
-                            `).join('')}
-                        </div>
+                <div class="tier-badge">Tier ${parseInt(c.cluster) + 1}</div>
+            </div>
+
+            <div class="archetype-stats">
+                <div class="sig-pill"><strong>Signature:</strong> ${c.cluster_signature}</div>
+            </div>
+
+            <div class="archetype-content">
+                <div class="strategy-box">
+                    <h4 style="margin-bottom:10px;"><i class="fa-solid fa-bullseye"></i> Recommended Strategy</h4>
+                    <p style="font-size:0.9rem; line-height:1.6;">
+                        ${getRecommendedStrategy(c.cluster_label)}
+                    </p>
+                </div>
+
+                <div class="representative-nodes">
+                    <h4 style="margin-bottom:10px; font-size:0.85rem; opacity:0.7;">Archetype Benchmarks</h4>
+                    <div class="benchmark-grid">
+                        ${renderBenchmarks(c.cluster)}
                     </div>
                 </div>
             </div>
-        `;
-    }).join('');
+        </div>
+    `).join('');
 }
 
-function getClusterBadges(label) {
-    const tags = {
-        "High Stress Urban Systems": ["Volume", "Update Pressure", "Bio Stress"],
-        "Extreme Youth Gap Districts": ["Youth Potential", "Coverage Gap"],
-        "High Volume Infrastructure Hubs": ["Efficiency", "Throughput"],
-        "Stress Anomaly Districts": ["Bio Error", "Audit Required"],
-        "Youth + Emerging Load Districts": ["Growth", "Service Transition"],
-        "Mixed Operational Districts": ["Standard", "Balanced"]
+function getRecommendedStrategy(label) {
+    const strategies = {
+        "High Stress Urban Systems": "Prioritize high-capacity biometric hardware upgrades and multi-operator enrollment centers to absorb peak transactional load in dense zones.",
+        "Extreme Youth Gap Districts": "Launch aggressive mobile registration units focused on secondary schools and decentralized community health centers to bridge the enrollment deficit.",
+        "High Volume Infrastructure Hubs": "Maintain existing resource levels while implementing throughput monitoring to ensure sustained operational stability.",
+        "Stress Anomaly Districts": "Perform immediate operational audit. Disproportionately high stress relative to volume suggests equipment failure or training deficiencies.",
+        "Youth + Emerging Load Districts": "Deployment of flexible 'pop-up' centers for targeted seasonal enrollment drives aligned with academic calendars.",
+        "Mixed Operational Districts": "Secondary priority. Perform quarterly monitoring for metric drift toward high-stress or high-gap archetypes."
     };
-    return (tags[label] || ["Standard"]).map(t => `<span class="badge badge-mid">${t}</span>`).join('');
+    return strategies[label] || "Perform site-specific operational review to determine resource requirements.";
 }
 
-// Hook into main.js init
+function renderBenchmarks(clusterId) {
+    // Pick 3 stable districts for this cluster
+    const matches = State.districts.filter(d => parseInt(d.cluster) === parseInt(clusterId)).slice(0, 3);
+    return matches.map(m => `
+        <div class="benchmark-chip" onclick="navigateToDistrict('${m.district}')">
+            ${capitalize(m.district)} <small>(${capitalize(m.state_clean)})</small>
+        </div>
+    `).join('');
+}
+
+// Hook into data load
 window.onDashboardDataLoaded = () => {
-    initClustersView();
+    initArchetypeView();
 };

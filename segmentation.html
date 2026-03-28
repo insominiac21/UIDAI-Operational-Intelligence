@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spatial Segmentation | UIDAI Intelligence</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>UIDAI 2026<br><small>Spatial Intelligence</small></h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-gauge-high"></i> Overview</a></li>
+                <li><a href="map.html"><i class="fa-solid fa-earth-asia"></i> Geospatial Hub</a></li>
+                <li><a href="clusters.html"><i class="fa-solid fa-diagram-project"></i> Archetype Intel</a></li>
+                <li><a href="segmentation.html" class="active"><i class="fa-solid fa-microscope"></i> Decision Space</a></li>
+                <li><a href="methodology.html"><i class="fa-solid fa-terminal"></i> Methodology</a></li>
+            </ul>
+        </div>
+
+        <main class="main-content fade-in">
+            <header>
+                <h2>Operational Decision Space</h2>
+                <p style="opacity:0.7;">Outlier identification via feature-space projection (x, y).</p>
+            </header>
+
+            <div class="glass-panel mt-4" style="height: 600px;">
+                <div id="segmentation-plot" style="height: 100%;"></div>
+            </div>
+
+            <div class="decision-panel mt-4">
+                <h4><i class="fa-solid fa-info-circle"></i> Identifying Tactical Peers</h4>
+                <p style="font-size:0.9rem; margin-top:10px;">
+                    This visualization plots districts based on their multidimensional operational similarity. Proximity in this 2D space suggests shared logistical constraints. 
+                    <strong>Click any node</strong> to extract its deep-intelligence profile.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/segmentation.js"></script>
+</body>
+</html>

@@ -1,172 +1,139 @@
 /**
- * map.js - Dashboard Map Logic
- * Handles GeoJSON loading, color scaling, and interactive layers.
+ * map.js - Advanced Geospatial Intelligence
+ * Implements Tiered Threshold Coloring & India District Mapping
  */
 
-let map;
-let geojsonLayer;
-let currentMetric = 'cluster';
+let Map;
+let GeoLayer;
+const INDIA_CENTER = [22.9734, 78.6569];
+const INDIA_BOUNDS = [[6.5, 68.0], [35.5, 97.5]];
 
-const COLOR_SCALES = {
-    opi: [
-        { limit: 30, color: '#f0fdf4' },
-        { limit: 40, color: '#bbf7d0' },
-        { limit: 50, color: '#4ade80' },
-        { limit: 60, color: '#16a34a' },
-        { limit: 100, color: '#14532d' }
-    ],
-    cluster: [
-        { val: 0, color: '#0d9488' }, // High Stress Urban
-        { val: 1, color: '#06b6d4' }, // Extreme Youth Gap
-        { val: 2, color: '#f59e0b' }, // High Volume Hubs
-        { val: 3, color: '#6366f1' }, // Stress Anomaly
-        { val: 4, color: '#ec4899' }, // Youth Emerging
-        { val: 5, color: '#94a3b8' }  // Mixed
-    ],
-    gap: [
-        { limit: 0.1, color: '#fff1f2' },
-        { limit: 0.3, color: '#fecaca' },
-        { limit: 0.5, color: '#f87171' },
-        { limit: 0.7, color: '#dc2626' },
-        { limit: 1.0, color: '#7f1d1d' }
-    ]
+// Threshold Scale Definitions
+const ColorScale = {
+    domain: [25, 50, 75],
+    range: ['#0d9488', '#06b6d4', '#8b5cf6', '#d946ef'] // Teal -> Cyan -> Purple -> Magenta
 };
 
-function initMap() {
-    map = L.map('india-map').setView([22.5, 80], 5);
-    
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap &copy; CARTO'
-    }).addTo(map);
-
-    loadGeoJSON();
+function getTierColor(val) {
+    if (val > ColorScale.domain[2]) return ColorScale.range[3];
+    if (val > ColorScale.domain[1]) return ColorScale.range[2];
+    if (val > ColorScale.domain[0]) return ColorScale.range[1];
+    return ColorScale.range[0];
 }
 
-async function loadGeoJSON() {
+function initMapIntel() {
+    Map = L.map('map', {
+        zoomSnap: 0.5,
+        maxBounds: INDIA_BOUNDS,
+        maxBoundsViscosity: 1.0
+    }).setView(INDIA_CENTER, 5);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(Map);
+
+    loadMapData();
+}
+
+async function loadMapData() {
     try {
         const response = await fetch(CONFIG.MAP_GEOJSON);
-        const data = await response.json();
+        const geojson = await response.json();
         
-        geojsonLayer = L.geoJson(data, {
-            style: styleFeature,
-            onEachFeature: onEachFeature
-        }).addTo(map);
+        GeoLayer = L.geoJSON(geojson, {
+            style: districtStyle,
+            onEachFeature: onDistrictTouch
+        }).addTo(Map);
 
-        renderLegend();
     } catch (error) {
-        console.error("Failed to load Map GeoJSON:", error);
+        console.error("Geospatial Load Error:", error);
+        document.getElementById('map').innerHTML += `<div class="error-overlay">Failed to load boundary data. Using point-intelligence fallback.</div>`;
     }
 }
 
-function styleFeature(feature) {
-    const districtName = feature.properties.district.toLowerCase();
-    const data = State.districts.find(d => d.district.toLowerCase() === districtName);
-    
-    let color = '#e2e8f0'; // Default gray
-    
-    if (data) {
-        if (currentMetric === 'cluster') {
-            const entry = COLOR_SCALES.cluster.find(c => c.val === data.cluster);
-            color = entry ? entry.color : color;
-        } else if (currentMetric === 'opi') {
-            const entry = COLOR_SCALES.opi.find(c => data.OPI <= c.limit);
-            color = entry ? entry.color : color;
-        } else if (currentMetric === 'gap') {
-            const entry = COLOR_SCALES.gap.find(c => data.coverage_gap <= c.limit);
-            color = entry ? entry.color : color;
-        }
-    }
+function districtStyle(feature) {
+    // Normalize naming between GeoJSON and State Model
+    const dName = feature.properties.district || feature.properties.dist_name || "";
+    const districtData = State.districts.find(d => 
+        d.district.toLowerCase() === dName.toLowerCase().replace(' district', '')
+    );
 
+    const opiVal = districtData ? districtData.OPI : 0;
+    
     return {
-        fillColor: color,
+        fillColor: getTierColor(opiVal),
         weight: 1,
         opacity: 1,
         color: 'white',
-        fillOpacity: 0.8
+        fillOpacity: districtData ? 0.8 : 0.1
     };
 }
 
-function onEachFeature(feature, layer) {
-    const districtName = feature.properties.district.toLowerCase();
-    const data = State.districts.find(d => d.district.toLowerCase() === districtName);
-
-    let popupContent = `<strong>${feature.properties.district}</strong><br>Data not available`;
-    if (data) {
-        popupContent = `
-            <div class="map-tooltip">
-                <h4 style="margin:0; border-bottom:1px solid #eee; padding-bottom:5px;">${capitalize(data.district)}</h4>
-                <p style="margin:5px 0; font-size:0.8rem; color:#666;">${capitalize(data.state_clean)}</p>
-                <div style="margin-top:8px;">
-                    <span class="badge ${getOpiClass(data.OPI)}">OPI: ${Math.round(data.OPI)}</span>
-                </div>
-                <p style="margin-top:10px; font-size:0.75rem;"><strong>Cluster:</strong> ${data.cluster_label}</p>
-                <button onclick="navigateToDistrict('${data.district}')" style="margin-top:10px; width:100%; border:none; background:var(--primary); color:white; padding:5px; border-radius:4px; font-weight:bold; cursor:pointer;">Explore Details</button>
-            </div>
-        `;
-    }
-
-    layer.bindPopup(popupContent);
+function onDistrictTouch(feature, layer) {
     layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight
+        mouseover: (e) => {
+            const l = e.target;
+            l.setStyle({ weight: 3, color: '#f8fafc', fillOpacity: 1 });
+            updateSidebar(feature);
+        },
+        mouseout: (e) => {
+            GeoLayer.resetStyle(e.target);
+        },
+        click: (e) => {
+            const dName = feature.properties.district || feature.properties.dist_name || "";
+            navigateToDistrict(dName);
+        }
     });
 }
 
-function highlightFeature(e) {
-    const layer = e.target;
-    layer.setStyle({
-        weight: 2,
-        color: '#666',
-        fillOpacity: 0.9
-    });
-    layer.bringToFront();
-}
-
-function resetHighlight(e) {
-    geojsonLayer.resetStyle(e.target);
-}
-
-function getOpiClass(opi) {
-    if (opi > 60) return 'badge-high';
-    if (opi > 40) return 'badge-mid';
-    return 'badge-low';
-}
-
-function switchMapMetric(metric) {
-    currentMetric = metric;
+function updateSidebar(feature) {
+    const dName = feature.properties.district || feature.properties.dist_name || "Unknown";
+    const data = State.districts.find(d => 
+        d.district.toLowerCase() === dName.toLowerCase().replace(' district', '')
+    );
     
-    // Update active button state
-    document.querySelectorAll('.map-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`[data-metric="${metric}"]`).classList.add('active');
-    
-    if (geojsonLayer) {
-        geojsonLayer.setStyle(styleFeature);
-    }
-    renderLegend();
-}
+    const panel = document.getElementById('map-side-intel');
+    if (!panel) return;
 
-function renderLegend() {
-    const legend = document.getElementById('map-legend');
-    if (!legend) return;
-
-    let items = [];
-    if (currentMetric === 'cluster') {
-        items = State.clusters.map(c => ({ color: COLOR_SCALES.cluster.find(sc => sc.val === c.cluster).color, label: c.cluster_label }));
-    } else if (currentMetric === 'opi') {
-        items = COLOR_SCALES.opi.map(c => ({ color: c.color, label: `< ${c.limit}` }));
-    } else if (currentMetric === 'gap') {
-        items = COLOR_SCALES.gap.map(c => ({ color: c.color, label: `< ${Math.round(c.limit*100)}%` }));
+    if (!data) {
+        panel.innerHTML = `<div class="p-4"><h4>${capitalize(dName)}</h4><p>No operational data available for this node.</p></div>`;
+        return;
     }
 
-    legend.innerHTML = items.map(i => `
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px; font-size:0.75rem;">
-            <div style="width:12px; height:12px; border-radius:2px; background:${i.color};"></div>
-            <span>${i.label}</span>
+    panel.innerHTML = `
+        <div class="intel-brief fade-in">
+            <h3>${capitalize(data.district)}</h3>
+            <p class="state-sub">${capitalize(data.state_clean)}</p>
+            
+            <div class="opi-hero" style="background:${getTierColor(data.OPI)}">
+                <div class="hero-label">Priority Index</div>
+                <div class="hero-val">${Math.round(data.OPI)}</div>
+            </div>
+
+            <div class="archetype-tag">${data.cluster_label}</div>
+            
+            <div class="reason-box">
+                <strong>Why Important:</strong><br>
+                ${data.tactical_reason}
+            </div>
+
+            <div class="metric-mini-grid">
+                <div class="mini-stat">
+                    <span>Gap</span>
+                    <strong>${(data.coverage_gap * 100).toFixed(1)}%</strong>
+                </div>
+                <div class="mini-stat">
+                    <span>Youth</span>
+                    <strong>${data.youth_pct.toFixed(0)}%</strong>
+                </div>
+            </div>
+
+            <button class="map-btn w-full mt-4" onclick="navigateToDistrict('${data.district}')">Open Detail Profile</button>
         </div>
-    `).join('');
+    `;
 }
 
-// Hook into main.js init
+// Global filter hook
 window.onDashboardDataLoaded = () => {
-    initMap();
+    initMapIntel();
 };
