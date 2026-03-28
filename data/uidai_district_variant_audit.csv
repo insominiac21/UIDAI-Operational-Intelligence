@@ -1,0 +1,5 @@
+state_clean,district_after_clean,raw_variants,n_variants
+andhra pradesh,visakhapatnam,"['visakhapatanam', 'visakhapatnam']",2
+dadra and nagar haveli and daman and diu,dadra and nagar haveli,"['dadra & nagar haveli', 'dadra and nagar haveli']",2
+himachal pradesh,lahul and spiti,"['lahul & spiti', 'lahul and spiti']",2
+west bengal,south twenty four parganas,"['south  twenty four parganas', 'south twenty four parganas']",2

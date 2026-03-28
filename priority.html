@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priority Engine | UIDAI Operational Intelligence</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .filter-bar {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            align-items: flex-end;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .filter-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .filter-group label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        select, input[type="number"] {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            outline: none;
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1>UIDAI 2026<br><small style="font-weight: 400; font-size: 0.8rem; color: #94a3b8;">Operational Intelligence</small></h1>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house" style="margin-right: 12px;"></i> Overview</a></li>
+                <li><a href="map.html"><i class="fa-solid fa-map-location-dot" style="margin-right: 12px;"></i> National Map</a></li>
+                <li><a href="clusters.html"><i class="fa-solid fa-layer-group" style="margin-right: 12px;"></i> Cluster Intel</a></li>
+                <li><a href="priority.html" class="active"><i class="fa-solid fa-list-check" style="margin-right: 12px;"></i> Priority Engine</a></li>
+                <li><a href="methodology.html"><i class="fa-solid fa-microscope" style="margin-right: 12px;"></i> Methodology</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content fade-in">
+            <header>
+                <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;">Tactical Queue</p>
+                <h2>Operational Priority Ranking</h2>
+            </header>
+
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label>Filter by State</label>
+                    <select id="filter-state" onchange="applyFilters()">
+                        <option value="">All States</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Operational Archetype</label>
+                    <select id="filter-cluster" onchange="applyFilters()">
+                        <option value="">All Archetypes</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Min OPI Score</label>
+                    <input type="number" id="filter-opi" value="0" min="0" max="100" oninput="applyFilters()">
+                </div>
+                <div style="padding-bottom: 5px;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px;">Showing: <span id="result-count">...</span> results</div>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Rank</th>
+                            <th>District Identity</th>
+                            <th>Archetype</th>
+                            <th>Coverage Gap</th>
+                            <th>OPI Score</th>
+                            <th style="text-align:right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="priority-tbody">
+                        <tr><td colspan="6" style="text-align:center; padding: 4rem; color: var(--text-muted);">
+                            <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <p>Loading Priority Queue...</p>
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 2rem;" class="glass-panel">
+                <h4 style="margin-bottom: 0.5rem; color: var(--dark);">Ranking Methodology Note</h4>
+                <p style="font-size: 0.875rem; color: var(--text-muted);">
+                    Districts flagged for significant data anomalies (zero activity joins or missing demographic segments) are automatically excluded from this ranked deployment queue to ensure intervention accuracy. See Methodology for details on normalization.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/priority.js"></script>
+</body>
+</html>

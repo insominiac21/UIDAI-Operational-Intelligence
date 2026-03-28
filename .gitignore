@@ -1,0 +1,20 @@
+# Notebooks & Raw Analysis
+*.ipynb
+.ipynb_checkpoints/
+UIDAI_Dashboard_Data_Guide.md
+uidai_dashboard_manifest.json
+
+# Scripts
+tmp_gen_similarity.py
+
+# Data Quality/Results (Excluded from build, using /data instead)
+results/
+
+# OS/IDEs
+.DS_Store
+.vscode/
+Thumbs.db
+
+# Vercel
+.vercel
+node_modules/

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>National Map | UIDAI Operational Intelligence</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        .map-wrapper {
+            position: relative;
+            margin-top: 1rem;
+        }
+        .legend-panel {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            min-width: 180px;
+        }
+        .legend-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1>UIDAI 2026<br><small style="font-weight: 400; font-size: 0.8rem; color: #94a3b8;">Operational Intelligence</small></h1>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house" style="margin-right: 12px;"></i> Overview</a></li>
+                <li><a href="map.html" class="active"><i class="fa-solid fa-map-location-dot" style="margin-right: 12px;"></i> National Map</a></li>
+                <li><a href="clusters.html"><i class="fa-solid fa-layer-group" style="margin-right: 12px;"></i> Cluster Intel</a></li>
+                <li><a href="priority.html"><i class="fa-solid fa-list-check" style="margin-right: 12px;"></i> Priority Engine</a></li>
+                <li><a href="methodology.html"><i class="fa-solid fa-microscope" style="margin-right: 12px;"></i> Methodology</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content fade-in">
+            <header style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;">Geospatial Intelligence</p>
+                    <h2>National Operations Map</h2>
+                </div>
+                <div class="map-controls">
+                    <button class="map-btn active" data-metric="cluster" onclick="switchMapMetric('cluster')">Operational Archetype</button>
+                    <button class="map-btn" data-metric="opi" onclick="switchMapMetric('opi')">Priority Index (OPI)</button>
+                    <button class="map-btn" data-metric="gap" onclick="switchMapMetric('gap')">Coverage Gap</button>
+                </div>
+            </header>
+
+            <div class="map-wrapper">
+                <div id="india-map"></div>
+                <div class="legend-panel">
+                    <div class="legend-title" id="legend-label">Color Coding</div>
+                    <div id="map-legend">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem;" class="glass-panel">
+                <h4 style="margin-bottom: 0.5rem; color: var(--dark);">Navigating the Map</h4>
+                <p style="font-size: 0.875rem; color: var(--text-muted);">
+                    Hover over any district to see its summary metrics. Click on a district to drill down into the **District Intelligence** profile, where you can view detailed operational signals and similar district clusters.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/map.js"></script>
+</body>
+</html>

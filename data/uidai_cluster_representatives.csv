@@ -1,0 +1,31 @@
+state_clean,district,cluster,cluster_label,cluster_signature,OPI,youth_pct,update_load_capped,bio_stress_capped,coverage_gap
+odisha,puri,0,High Stress Urban Systems,High Update Load + High Biometric Stress + High Volume,29.61538461692184,15.38461538461126,5.0,2000.0,0.0
+odisha,khorda,0,High Stress Urban Systems,High Update Load + High Biometric Stress + High Volume,29.551772065449487,15.172573546440773,5.0,2000.0,0.0
+odisha,kandhamal,0,High Stress Urban Systems,High Update Load + High Biometric Stress + High Volume,29.28432327309176,14.281077572212178,5.0,2000.0,0.0
+tamil nadu,sivaganga,0,High Stress Urban Systems,High Update Load + High Biometric Stress + High Volume,29.62213225525087,15.407107512367205,5.0,2000.0,0.0
+odisha,angul,0,High Stress Urban Systems,High Update Load + High Biometric Stress + High Volume,29.11627907113817,13.72093023255358,5.0,2000.0,0.0
+chhattisgarh,sakti,1,Extreme Youth Gap Districts,Very High Coverage Gap + High Youth + Low Update Activity,56.57777122381511,17.58241758237894,5.0,2000.0,0.5845121321631819
+west bengal,south dinajpur,1,Extreme Youth Gap Districts,Very High Coverage Gap + High Youth + Low Update Activity,60.75246755301074,15.91928251117507,5.0,2000.0,0.6883707288459175
+telangana,jayashankar bhupalpally,1,Extreme Youth Gap Districts,Very High Coverage Gap + High Youth + Low Update Activity,63.486219883199766,20.425029515914492,5.0,2000.0,0.7190824672529538
+telangana,komaram bheem,1,Extreme Youth Gap Districts,Very High Coverage Gap + High Youth + Low Update Activity,59.26726987578637,17.08860759492126,5.0,2000.0,0.6475708354578029
+telangana,jangoan,1,Extreme Youth Gap Districts,Very High Coverage Gap + High Youth + Low Update Activity,54.43409430527944,12.720156555760548,5.0,2000.0,0.5692899408284279
+uttar pradesh,sant ravidas nagar bhadohi,2,High Volume Infrastructure Hubs,High Enrollment Volume + High Youth Share,69.3452381004012,55.95238095171485,4.845238095180414,1309.52380950822,0.6296296296308767
+bihar,aurangabad(bh),2,High Volume Infrastructure Hubs,High Enrollment Volume + High Youth Share,71.94792278230686,56.637168141091706,5.0,2000.0,0.6657060518736806
+bihar,samstipur,2,High Volume Infrastructure Hubs,High Enrollment Volume + High Youth Share,65.41294643343223,49.99999999939024,5.0,2000.0,0.5647321428581145
+uttar pradesh,bulandshahar,2,High Volume Infrastructure Hubs,High Enrollment Volume + High Youth Share,65.2840895229996,37.83783783763331,4.772972972947174,1189.1891891827613,0.6681749622931099
+bihar,bhabua,2,High Volume Infrastructure Hubs,High Enrollment Volume + High Youth Share,75.20161290826421,54.838709675650364,5.0,1064.5161289979187,0.7500000000018939
+jharkhand,deoghar,3,Stress Anomaly Districts,High Stress + Low Volume (Operational Inefficiency),38.25925036482181,44.197501201340195,5.0,2000.0,0.0
+uttar pradesh,baghpat,3,Stress Anomaly Districts,High Stress + Low Volume (Operational Inefficiency),39.05029975610702,46.834332504745305,5.0,2000.0,0.0
+madhya pradesh,sheopur,3,Stress Anomaly Districts,High Stress + Low Volume (Operational Inefficiency),38.800829880117035,46.00276625172254,5.0,2000.0,0.0
+bihar,banka,3,Stress Anomaly Districts,High Stress + Low Volume (Operational Inefficiency),37.99530432074742,43.31768105471886,5.0,2000.0,0.0
+jharkhand,chatra,3,Stress Anomaly Districts,High Stress + Low Volume (Operational Inefficiency),38.41954935388394,44.73183116470251,5.0,2000.0,0.0
+telangana,medchal malkajgiri,4,Youth + Emerging Load Districts,High Youth + Moderate Stress + Emerging Demand,,37.642045454491985,0.0,0.0,1.0
+jharkhand,east singhbum,4,Youth + Emerging Load Districts,High Youth + Moderate Stress + Emerging Demand,,37.73324118864013,0.0,0.0,1.0
+maharashtra,ahmednagar,4,Youth + Emerging Load Districts,High Youth + Moderate Stress + Emerging Demand,,42.93478260857898,0.0,0.0,1.0
+west bengal,medinipur west,4,Youth + Emerging Load Districts,High Youth + Moderate Stress + Emerging Demand,,46.511627906904636,0.0,0.0,1.0
+chhattisgarh,gaurella pendra marwahi,4,Youth + Emerging Load Districts,High Youth + Moderate Stress + Emerging Demand,,29.50152594096694,0.0,0.0,1.0
+sikkim,north sikkim,5,Mixed Operational Districts,Moderate Across Metrics (Needs Case-by-Case Review),33.22580645422216,27.41935483826743,5.0,2000.0,0.0
+andhra pradesh,k.v.rangareddy,5,Mixed Operational Districts,Moderate Across Metrics (Needs Case-by-Case Review),31.0869565236799,20.28985507216971,5.0,2000.0,0.0
+arunachal pradesh,tawang,5,Mixed Operational Districts,Moderate Across Metrics (Needs Case-by-Case Review),33.37662337936119,27.92207792189661,5.0,2000.0,0.0
+maharashtra,nandurbar ,5,Mixed Operational Districts,Moderate Across Metrics (Needs Case-by-Case Review),32.071428573735204,23.571428571260206,5.0,2000.0,0.0
+jammu and kashmir,leh,5,Mixed Operational Districts,Moderate Across Metrics (Needs Case-by-Case Review),31.116504856378075,20.388349514464135,5.0,2000.0,0.0

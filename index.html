@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overview | UIDAI Operational Intelligence</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1>UIDAI 2026<br><small style="font-weight: 400; font-size: 0.8rem; color: #94a3b8;">Operational Intelligence</small></h1>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active"><i class="fa-solid fa-house" style="margin-right: 12px;"></i> Overview</a></li>
+                <li><a href="map.html"><i class="fa-solid fa-map-location-dot" style="margin-right: 12px;"></i> National Map</a></li>
+                <li><a href="clusters.html"><i class="fa-solid fa-layer-group" style="margin-right: 12px;"></i> Cluster Intel</a></li>
+                <li><a href="priority.html"><i class="fa-solid fa-list-check" style="margin-right: 12px;"></i> Priority Engine</a></li>
+                <li><a href="methodology.html"><i class="fa-solid fa-microscope" style="margin-right: 12px;"></i> Methodology</a></li>
+            </ul>
+            <div style="margin-top: auto; padding: 1rem; font-size: 0.75rem; color: #64748b; border-top: 1px solid rgba(255,255,255,0.1);">
+                V1.0.4 Deployment • 2026
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content fade-in">
+            <header>
+                <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;">Decision Support System</p>
+                <h2>National Operations Overview</h2>
+            </header>
+
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="global-search" placeholder="Search for a district or state (e.g. 'South Andaman')...">
+            </div>
+
+            <div class="kpi-grid" id="kpi-container">
+                <!-- Data populated by JS -->
+                <div class="kpi-card shadow">
+                    <div class="kpi-label">Total Districts</div>
+                    <div class="kpi-value" id="kpi-districts">...</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Top Priority (High OPI)</div>
+                    <div class="kpi-value" id="kpi-priority">...</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Operational archetypes</div>
+                    <div class="kpi-value" id="kpi-clusters">...</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Active Enrollment Capacity</div>
+                    <div class="kpi-value" id="kpi-enrol">...</div>
+                </div>
+            </div>
+
+            <div class="glass-panel" style="margin-bottom: 2.5rem;">
+                <h3 style="margin-bottom: 1rem; color: var(--dark);">Intelligence Framework</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem; max-width: 800px;">
+                    This platform transforms raw administrative data into **Operational Intelligence**. By segments districts into six distinct archetypes, we provide authorities with a clear roadmap for equipment refreshes, staff deployment, and local outreach strategies.
+                </p>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="map-btn active" onclick="window.location.href='map.html'" style="padding: 0.75rem 1.5rem;">
+                        <i class="fa-solid fa-map-location-dot" style="margin-right: 8px;"></i> Launch Interactive Map
+                    </button>
+                    <button class="map-btn" onclick="window.location.href='priority.html'" style="padding: 0.75rem 1.5rem;">
+                        <i class="fa-solid fa-arrow-up-wide-short" style="margin-right: 8px;"></i> Inspect Priority Queue
+                    </button>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div class="glass-panel">
+                    <h3 style="margin-bottom: 1rem; color: var(--dark);"><i class="fa-solid fa-bolt" style="color: var(--primary); margin-right: 10px;"></i> OPI Scoring Logic</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+                        The **Operational Priority Index (OPI)** is a composite score weighted by three critical drivers:
+                        <ul style="margin-top: 0.5rem; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <li style="margin-bottom: 0.5rem;"><strong>Coverage Gap (45%):</strong> Unmet demand and regional saturation.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Youth Percentage (30%):</strong> Future growth potential and school-age demand.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Update Load (25%):</strong> Pressure on existing enrollment centers.</li>
+                        </ul>
+                    </p>
+                </div>
+                <div class="glass-panel">
+                    <h3 style="margin-bottom: 1rem; color: var(--dark);"><i class="fa-solid fa-circle-nodes" style="color: var(--secondary); margin-right: 10px;"></i> Similarity Engine</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+                        Instead of simple geographical proximity, our engine computes **Feature-Space Similarity**. By finding neighbors with identical operational profiles, we allow administrators to transplant successful strategies from similar districts across state lines.
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Page-specific initialization
+        window.onDashboardDataLoaded = () => {
+            document.getElementById('kpi-districts').innerText = formatNum(State.districts.length);
+            document.getElementById('kpi-priority').innerText = formatNum(State.priorityDistricts.length);
+            document.getElementById('kpi-clusters').innerText = formatNum(State.clusters.length);
+            
+            const totalEnrol = State.districts.reduce((sum, d) => sum + (d.total_enrolments || 0), 0);
+            document.getElementById('kpi-enrol').innerText = formatNum(totalEnrol);
+        };
+    </script>
+</body>
+</html>

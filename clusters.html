@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cluster Intelligence | UIDAI Operational Intelligence</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1>UIDAI 2026<br><small style="font-weight: 400; font-size: 0.8rem; color: #94a3b8;">Operational Intelligence</small></h1>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house" style="margin-right: 12px;"></i> Overview</a></li>
+                <li><a href="map.html"><i class="fa-solid fa-map-location-dot" style="margin-right: 12px;"></i> National Map</a></li>
+                <li><a href="clusters.html" class="active"><i class="fa-solid fa-layer-group" style="margin-right: 12px;"></i> Cluster Intel</a></li>
+                <li><a href="priority.html"><i class="fa-solid fa-list-check" style="margin-right: 12px;"></i> Priority Engine</a></li>
+                <li><a href="methodology.html"><i class="fa-solid fa-microscope" style="margin-right: 12px;"></i> Methodology</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content fade-in">
+            <header>
+                <p style="color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;">Archetype Analysis</p>
+                <h2>Operational Cluster Profiles</h2>
+            </header>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem; align-items: start;">
+                <div class="glass-panel">
+                    <h3 style="margin-bottom: 1rem; color: var(--dark);">Dimensional Segmentation</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
+                        Our KMeans model identifies 6 natural groupings within the district feature space. These clusters represent stable operational signatures, allowing for standardized policy responses across geographically distant regions.
+                    </p>
+                    <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                        <img src="data/figures/__results___27_0.png" alt="District Segmentation Map" style="width: 100%; border-radius: 4px;">
+                        <p style="text-align: center; font-size: 0.7rem; color: var(--text-muted); margin-top: 0.5rem;">Feature-Space Projection (t-SNE)</p>
+                    </div>
+                </div>
+                
+                <div style="padding: 1rem 0;">
+                    <h3 style="margin-bottom: 1rem; color: var(--dark);">Discovery Summary</h3>
+                    <div style="display: grid; gap: 1rem;">
+                        <div class="kpi-card" style="border-left: 4px solid var(--primary);">
+                            <div class="kpi-label">Core Objective</div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-top: 5px;">Policy Standardization</div>
+                        </div>
+                        <div class="kpi-card" style="border-left: 4px solid var(--secondary);">
+                            <div class="kpi-label">Model Selection</div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-top: 5px;">K-Means (k=6)</div>
+                        </div>
+                        <div class="kpi-card" style="border-left: 4px solid #f59e0b;">
+                            <div class="kpi-label">Feature Density</div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-top: 5px;">5 Operational Dimensions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 2rem; color: var(--dark);">Intelligence Archetypes</h3>
+            <div id="clusters-container">
+                <!-- Data populated by JS -->
+                <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>Loading Archetype Data...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/clusters.js"></script>
+</body>
+</html>
