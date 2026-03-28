@@ -7,7 +7,7 @@
  * Finds the Top 5 similar districts based on spatial proximity.
  * This aligns with the model's high-dimensional projection.
  */
-function getSimilarDistrictsEuclidean(targetDistrict, allDistricts) {
+function getSimilarDistrictsEuclidean(targetDistrict, allDistricts, limit = 5) {
     if (!targetDistrict || !allDistricts.length) return [];
 
     const x1 = parseFloat(targetDistrict.x);
@@ -23,7 +23,7 @@ function getSimilarDistrictsEuclidean(targetDistrict, allDistricts) {
         });
 
     // Sort by distance (ascending)
-    return scored.sort((a, b) => a.distance - b.distance).slice(0, 5);
+    return scored.sort((a, b) => a.distance - b.distance).slice(0, limit);
 }
 
 /**

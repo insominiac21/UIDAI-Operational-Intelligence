@@ -1,22 +1,22 @@
 /**
- * UIDAI Decision Intelligence - Premium Excellence Design System
+ * UIDAI Decision Intelligence - Aesthetic Recovery Design System
  * -------------------------------------------------------------
- * Typography: Outfit (Headers), Inter (Body)
- * Aesthetics: High-Density Glassmorphism, Deep Navy Base, Vibrant Accents
+ * Theme: Light Teal & Clean White (Original Palette)
+ * Background: #F0FDFA, Card: #FFFFFF, Accent: #134e4a
  */
 
  :root {
-    --primary: #06b6d4;    /* Vibrant Cyan */
-    --primary-glow: rgba(6, 182, 212, 0.4);
-    --secondary: #0d9488;  /* Deep Teal */
+    --primary: #0d9488;    /* Deep Teal */
+    --secondary: #06b6d4;  /* Vibrant Cyan */
     --accent: #8b5cf6;     /* Royal Purple */
     --danger: #d946ef;     /* Magenta / Critical */
-    --dark-base: #020617;  /* Deep Space Navy */
-    --dark-card: rgba(15, 23, 42, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    --bg-main: #F0FDFA;    /* Light Teal Background */
+    --card-bg: #FFFFFF;    /* Clean White Card */
+    --text-main: #134e4a;  /* Dark Teal Typography */
+    --text-muted: #64748b; /* Muted Slate */
+    --border: #e2e8f0;
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+    --shadow-bold: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 * {
@@ -28,44 +28,38 @@
 body {
     font-family: 'Inter', sans-serif;
     color: var(--text-main);
-    background: var(--dark-base);
-    background-image: 
-        radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.05) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
+    background: var(--bg-main);
+    line-height: 1.6;
     min-height: 100vh;
-    overflow-x: hidden;
 }
 
 h1, h2, h3, h4 {
     font-family: 'Outfit', sans-serif;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
 }
 
 .app-container {
     display: flex;
 }
 
-/* Sidebar: Premium Edge */
+/* Sidebar: Light & Functional */
 .sidebar {
-    width: 300px;
-    background: rgba(2, 6, 23, 0.8);
-    backdrop-filter: blur(20px);
-    border-right: 1px solid var(--glass-border);
-    padding: 3rem 1.5rem;
+    width: 280px;
+    background: #FFFFFF;
+    border-right: 1px solid var(--border);
+    padding: 2.5rem 1.5rem;
     position: fixed;
     height: 100vh;
     z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.02);
 }
 
 .logo h1 {
-    font-size: 1.75rem;
-    font-weight: 900;
-    background: linear-gradient(to right, #fff, var(--primary));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    line-height: 1;
-    margin-bottom: 3rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.1;
+    margin-bottom: 2.5rem;
 }
 
 .logo small {
@@ -73,204 +67,210 @@ h1, h2, h3, h4 {
     font-size: 0.7rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 8px;
-    -webkit-text-fill-color: var(--text-muted); /* Reset for gradient */
+    letter-spacing: 1px;
+    margin-top: 5px;
 }
 
 .nav-links li a {
     display: flex;
     align-items: center;
-    padding: 1rem 1.25rem;
+    padding: 0.85rem 1.25rem;
     color: var(--text-muted);
     text-decoration: none;
     border-radius: 0.75rem;
-    margin-bottom: 0.75rem;
-    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-weight: 500;
-    border: 1px solid transparent;
+    margin-bottom: 0.5rem;
+    transition: 0.2s;
+    font-weight: 600;
 }
 
-.nav-links li a i { width: 20px; font-size: 1.1rem; }
+.nav-links li a i { width: 22px; font-size: 1.1rem; }
 
 .nav-links li a:hover, .nav-links li a.active {
-    background: rgba(6, 182, 212, 0.1);
-    color: white;
-    border-color: rgba(6, 182, 212, 0.2);
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);
+    background: #f0fdfa;
+    color: var(--primary);
 }
 
 /* Main Workspace */
 .main-content {
     flex-grow: 1;
-    margin-left: 300px;
-    padding: 4rem 3.5rem;
+    margin-left: 280px;
+    padding: 3rem 4rem;
 }
 
-/* Glassmorphism Cards */
+/* Card Architecture */
 .glass-panel {
-    background: var(--dark-card);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    border-radius: 1.5rem;
-    padding: 2.5rem;
-    box-shadow: var(--shadow-premium);
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-soft);
 }
 
-/* KPI Architecture */
+/* KPI Hub */
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    margin-bottom: 3rem;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
 }
 
 .kpi-card {
-    background: var(--dark-card);
-    border-radius: 1.5rem;
-    padding: 2rem;
-    border: 1px solid var(--glass-border);
-    position: relative;
-    overflow: hidden;
+    background: var(--card-bg);
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
 }
-
-.kpi-card::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 4px; height: 100%;
-}
-
-.kpi-card-hero::after { background: var(--primary); }
 
 .kpi-label {
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     font-size: 0.7rem;
-    font-weight: 800;
+    font-weight: 700;
     color: var(--text-muted);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .kpi-value {
-    font-size: 3rem;
-    font-weight: 900;
-    color: white;
-    font-family: 'Outfit', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-main);
 }
 
-/* Priority Table: Decision Ready */
-.decision-panel {
-    background: var(--dark-card);
-    border-radius: 1.5rem;
-    border: 1px solid var(--glass-border);
-    padding: 2.5rem;
-}
-
+/* Table: Tactical Queue */
 .priority-table th {
     text-transform: uppercase;
+    text-align: left;
     font-size: 0.7rem;
     font-weight: 800;
     color: var(--text-muted);
-    letter-spacing: 1px;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
 }
 
 .priority-table td {
-    padding: 1.5rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #f1f5f9;
 }
 
 .clickable-row:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: #f8fafc;
+    cursor: pointer;
 }
 
-/* Badges */
-.opi-badge {
-    background: rgba(139, 92, 246, 0.2);
-    color: #a78bfa;
-    padding: 6px 14px;
-    border-radius: 2rem;
-    font-weight: 800;
-    font-family: 'Outfit', sans-serif;
-    border: 1px solid rgba(139, 92, 246, 0.3);
-}
-
-.reason-tag {
-    background: rgba(6, 182, 212, 0.1);
-    color: var(--primary);
-    padding: 4px 12px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border: 1px solid rgba(6, 182, 212, 0.2);
-}
-
-/* Similarity Discovery Bar */
+/* Peer Discovery Hub (New Focal Point) */
 .discovery-hub {
-    margin-top: 3rem;
-    background: linear-gradient(135deg, rgba(6, 182, 212, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
-    padding: 3rem;
-    border-radius: 2rem;
-    border: 1px solid var(--glass-border);
+    margin-top: 2.5rem;
+    background: #f0fdfa;
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    border: 1px solid var(--primary);
+    border-left: 8px solid var(--primary);
+    margin-bottom: 2.5rem;
 }
 
-.discovery-input-group {
+.discovery-controls {
     display: flex;
     gap: 1rem;
     margin-top: 1.5rem;
+    align-items: center;
 }
 
 .premium-input {
     flex-grow: 1;
-    background: var(--dark-base);
-    border: 1px solid var(--glass-border);
-    padding: 1.25rem 1.5rem;
-    border-radius: 1rem;
-    color: white;
-    font-size: 1.1rem;
+    background: white;
+    border: 1px solid var(--border);
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
+    color: var(--text-main);
+    font-size: 1rem;
     outline: none;
-    transition: 0.3s;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .premium-input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.peer-toggle {
+    display: flex;
+    background: #e2e8f0;
+    padding: 4px;
+    border-radius: 0.75rem;
+}
+
+.toggle-btn {
+    padding: 6px 14px;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 700;
+    font-size: 0.75rem;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.toggle-btn.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: var(--shadow-soft);
 }
 
 .discovery-btn {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 0 2rem;
-    border-radius: 1rem;
+    padding: 12px 24px;
+    border-radius: 0.75rem;
     font-weight: 700;
     cursor: pointer;
-    transition: 0.3s;
 }
 
-.discovery-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px var(--primary-glow);
+/* Map Hub Focus */
+#map-container {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+#map-svg { width: 100%; height: 100%; }
 
-.fade-in { animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-
-/* SVG Dynamic Glow */
 .district-path {
-    stroke-opacity: 0.4;
-    transition: stroke 0.3s, stroke-width 0.3s, fill 0.3s;
+    stroke: rgba(0, 0, 0, 0.1);
+    stroke-width: 0.5;
+    transition: 0.2s ease-in-out;
 }
 
 .district-path:hover {
-    filter: brightness(1.2) drop-shadow(0 0 15px rgba(255,255,255, 0.3));
-    stroke: white !important;
-    stroke-width: 2px !important;
-    stroke-opacity: 1;
+    stroke: var(--text-main);
+    stroke-width: 1.5;
+    filter: brightness(1.1);
+}
+
+/* Utility */
+.fade-in { animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.opi-badge {
+    background: #f5f3ff;
+    color: var(--accent);
+    padding: 4px 10px;
+    border-radius: 2rem;
+    font-weight: 700;
+    font-size: 0.75rem;
+    border: 1px solid #ddd6fe;
+}
+
+.reason-tag {
+    background: #f0fdfa;
+    color: var(--primary);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
 }

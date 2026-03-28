@@ -77,17 +77,32 @@
                 </div>
             </div>
 
-            <!-- Similarity Discovery Hub -->
+            <!-- Strategic Peer Discovery Hub -->
             <div class="discovery-hub fade-in">
-                <h3><i class="fa-solid fa-magnifying-glass-chart" style="color:var(--primary)"></i> Tactical Peer Discovery</h3>
-                <p style="color:var(--text-muted); font-size: 0.9rem; margin-top: 5px;">Discover operational peers based on feature proximity. Search any district to find its Top 5 tactical counterparts.</p>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <h3><i class="fa-solid fa-magnifying-glass-chart" style="color:var(--primary)"></i> Strategic Peer Discovery</h3>
+                        <p style="color:var(--text-muted); font-size: 0.85rem; margin-top: 5px;">
+                            Identify operationally similar regions to benchmark deployment strategies. 
+                            <span class="tooltip-trigger" title="Calculated using Euclidean distance in the model's spatial projection (x, y).">How this works <i class="fa-solid fa-circle-info"></i></span>
+                        </p>
+                    </div>
+                </div>
                 
-                <div class="discovery-input-group">
-                    <input type="text" id="similarity-search" class="premium-input" placeholder="Enter District Name (e.g., Patna, Pune)...">
-                    <button class="discovery-btn" onclick="executeSimilaritySearch()"><i class="fa-solid fa-bolt"></i> Discover Peers</button>
+                <div class="discovery-controls">
+                    <input type="text" id="similarity-search" class="premium-input" placeholder="Search District (e.g., Patna, Pune)...">
+                    
+                    <div class="peer-toggle" id="peer-count-toggle">
+                        <button class="toggle-btn active" data-count="5">Top 5</button>
+                        <button class="toggle-btn" data-count="10">Top 10</button>
+                    </div>
+
+                    <button class="discovery-btn" onclick="executeSimilaritySearch()">
+                        <i class="fa-solid fa-bolt"></i> Discover Peers
+                    </button>
                 </div>
 
-                <div id="similarity-results-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:1.5rem; margin-top:2.5rem;">
+                <div id="similarity-results-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:1.25rem; margin-top:2rem;">
                     <!-- Peer cards populated by JS -->
                 </div>
             </div>
@@ -119,7 +134,7 @@
         window.onDashboardDataLoaded = () => {
             renderHeroStats();
             renderTopTen();
-            setupSimilaritySearchListeners();
+            setupSimilarityControls();
         };
 
         function renderHeroStats() {
@@ -141,7 +156,7 @@
                     <td style="opacity:0.8">${capitalize(d.state_clean)}</td>
                     <td><span class="opi-badge highlight">${Math.round(d.OPI)}</span></td>
                     <td><span class="reason-tag">${d.tactical_reason}</span></td>
-                    <td style="text-align:right"><i class="fa-solid fa-chevron-right"></i></td>
+                    <td style="text-align:right"><i class="fa-solid fa-chevron-right" style="opacity:0.3"></i></td>
                 </tr>
             `).join('');
 
@@ -149,13 +164,26 @@
             const archetypeList = [...new Set(State.districts.map(d => d.cluster_label))];
             const linksCon = document.getElementById('archetype-links');
             linksCon.innerHTML = archetypeList.map(label => `
-                <div class="small-badge-card" style="background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); padding:10px; border-radius:8px; cursor:pointer;" onclick="window.location.href='clusters.html#${encodeURIComponent(label)}'">
+                <div class="small-badge-card" style="background:#fff; border:1px solid var(--border); padding:12px; border-radius:10px; cursor:pointer; text-align:center; font-weight:700; font-size:0.8rem;" onclick="window.location.href='clusters.html#${encodeURIComponent(label)}'">
                     ${label}
                 </div>
             `).join('');
         }
 
-        function setupSimilaritySearchListeners() {
+        // --- Strategic Peer Discovery Logic ---
+        let currentPeerLimit = 5;
+
+        function setupSimilarityControls() {
+            const toggleBtns = document.querySelectorAll('#peer-count-toggle .toggle-btn');
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    toggleBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentPeerLimit = parseInt(btn.dataset.count);
+                    executeSimilaritySearch(); // Re-run if search already has query
+                });
+            });
+
             const input = document.getElementById('similarity-search');
             input.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') executeSimilaritySearch();
@@ -172,24 +200,45 @@
             );
 
             if (!target) {
-                alert("District Node not found. Please clarify the regional identifier.");
+                alert("District node not found. Please verify the regional identifier.");
                 return;
             }
 
-            const peers = getSimilarDistrictsEuclidean(target, State.districts);
+            // similarity.js function (Euclidean distance on x, y)
+            const peers = getSimilarDistrictsEuclidean(target, State.districts, currentPeerLimit);
             const grid = document.getElementById('similarity-results-grid');
 
             grid.innerHTML = peers.map(p => `
-                <div class="peer-card fade-in" style="margin-bottom:0;" onclick="navigateToDistrict('${p.district}')">
-                    <div class="peer-header">
-                        <strong style="font-size:1.1rem">${capitalize(p.district)}</strong>
-                        <small>${capitalize(p.state_clean)}</small>
+                <tr class="peer-card-tr fade-in" style="cursor:pointer;" onclick="navigateToDistrict('${p.district}')">
+                    <div class="glass-panel" style="margin-bottom:0; padding:1.25rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <strong style="font-size:1.1rem; color:var(--text-main);">${capitalize(p.district)}</strong>
+                                <div style="font-size:0.75rem; color:var(--text-muted);">${capitalize(p.state_clean)}</div>
+                            </div>
+                            <div class="opi-badge" style="background:rgba(13, 148, 136, 0.1); color:var(--primary);">${Math.round(p.OPI)}</div>
+                        </div>
+                        <div style="margin-top:10px; font-size:0.8rem; font-weight:600; color:var(--accent);">
+                            ${p.cluster_label}
+                        </div>
                     </div>
-                    <div class="peer-body">
-                        <div class="peer-opi" style="color:${getTierColorForProfile(p.OPI)}">OPI: ${Math.round(p.OPI)}</div>
-                        <div class="peer-archetype" style="font-size:0.7rem">${p.cluster_label}</div>
+                </tr>
+            `).join(''); // Using glass-panel cards in grid
+            
+            // Re-render as grid cards
+            grid.innerHTML = peers.map(p => `
+                <div class="glass-panel fade-in" style="padding:1.25rem; cursor:pointer;" onclick="navigateToDistrict('${p.district}')">
+                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                        <div>
+                            <div style="font-weight:800; font-size:1.1rem; color:var(--text-main);">${capitalize(p.district)}</div>
+                            <div style="font-size:0.75rem; font-weight:600; color:var(--text-muted); text-transform:uppercase;">${capitalize(p.state_clean)}</div>
+                        </div>
+                        <div class="opi-badge" style="border-radius:8px;">${Math.round(p.OPI)}</div>
                     </div>
-                    <div class="peer-footer">Inspect Strategy &rarr;</div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.5rem; opacity:0.1;"><i class="fa-solid fa-map-pin"></i></span>
+                        <div style="font-size:0.8rem; font-weight:700; color:var(--accent);">${p.cluster_label}</div>
+                    </div>
                 </div>
             `).join('');
             
