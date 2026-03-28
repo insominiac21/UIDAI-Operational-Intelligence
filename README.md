@@ -2,6 +2,8 @@
 
 A production-grade, district-level decision-support system designed to optimize UIDAI enrollment-center deployments and equipment allocation strategies across India.
 
+**Live Platform**: [https://uidai-operational-intelligence.vercel.app/](https://uidai-operational-intelligence.vercel.app/)
+
 ## 🚀 Overview
 The **UIDAI Operational Intelligence Dashboard** transforms raw administrative and performance data into actionable regional archetypes. It enables national authorities to:
 - **Prioritize Deployments**: Use the 0-100 OPI (Operational Priority Index) score to identify districts in need of immediate hardware or personnel intervention.

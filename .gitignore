@@ -1,5 +1,4 @@
 # Notebooks & Raw Analysis
-*.ipynb
 .ipynb_checkpoints/
 UIDAI_Dashboard_Data_Guide.md
 uidai_dashboard_manifest.json
