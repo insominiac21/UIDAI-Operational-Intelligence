@@ -1,16 +1,18 @@
 /**
- * main.js - Dynamic Data Orchestration Layer (v14)
- * -----------------------------------------------
+ * main.js - Dynamic Data Orchestration Layer (v17 Restoration)
+ * -----------------------------------------------------------
  * Core State & Technical Strategy Logic
  */
 
 const CONFIG = {
     DATA_PATH: './data/',
-    MODEL_TABLE: 'uidai_district_model_table.csv'
+    MODEL_TABLE: 'uidai_district_model_table.csv',
+    CLUSTER_SUMMARY: 'uidai_cluster_summary.csv' // RESTORED
 };
 
 const State = {
     districts: [],
+    clusters: [], // RESTORED
     loading: true,
     currentPage: 1,
     pageSize: 10,
@@ -61,7 +63,11 @@ async function initDashboard() {
     try {
         console.log("Synchronizing Dynamic Knowledge Base from CSV...");
         
-        const rawDistricts = await loadCSV(CONFIG.MODEL_TABLE);
+        // RESTORED: Concurrent loading of both datasets
+        const [rawDistricts, rawClusters] = await Promise.all([
+            loadCSV(CONFIG.MODEL_TABLE),
+            loadCSV(CONFIG.CLUSTER_SUMMARY)
+        ]);
 
         // Standardize & Enhance Data
         State.districts = rawDistricts.filter(d => d.district).map(d => ({
@@ -74,10 +80,11 @@ async function initDashboard() {
             tactical_reason: calculateTacticalReason(d)
         }));
 
+        State.clusters = rawClusters.filter(c => c.cluster_label);
         State.totalPages = Math.ceil(State.districts.length / State.pageSize);
         State.loading = false;
 
-        console.log(`Knowledge Base Initialized: ${State.districts.length} Nodes Synchronized.`);
+        console.log(`Knowledge Base Initialized: ${State.districts.length} Nodes & ${State.clusters.length} Archetypes Synchronized.`);
 
         // Notify Listeners
         if (window.onDashboardDataLoaded) {
@@ -90,13 +97,12 @@ async function initDashboard() {
 }
 
 /**
- * Navigation Utility
+ * Navigation Utility (RESTORED REDIRECTION TO PROFILE)
  */
 function navigateToDistrict(name) {
-    // If we have a district details page, navigate there. Otherwise, scroll to top or similar.
-    // For this implementation, we focus on the pagination and map sync.
-    console.log(`Navigating to District Node: ${name}`);
-    // Optional: window.location.href = `profile.html?id=${encodeURIComponent(name)}`;
+    if (!name) return;
+    console.log(`Executing Tactical Redirection to Node Profile: ${name}`);
+    window.location.href = `district.html?district=${encodeURIComponent(name)}`;
 }
 
 /**
