@@ -10,81 +10,105 @@
     <style>
         .map-layout {
             display: grid;
-            grid-template-columns: 1fr 380px;
-            height: calc(100vh - 80px);
+            grid-template-columns: 1fr 400px;
+            height: calc(100vh - 120px);
             gap: 24px;
             margin-top: 10px;
         }
-        #map-container {
-            background: #0f172a; /* Deep Navy to make vibrant colors pop */
+
+        /* Immersive Wrapper for Fullscreen API */
+        #map-wrapper-main {
+            background: #0f172a;
             border-radius: 1.5rem;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
+
+        #map-container {
+            flex-grow: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
         #map-svg {
             width: 100%;
             height: 100%;
-            cursor: move;
+            cursor: crosshair;
         }
-        .district-path {
-            stroke: rgba(255, 255, 255, 0.15);
-            stroke-width: 0.5;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .district-path:hover {
-            stroke: #fff;
-            stroke-width: 1.5;
-            filter: brightness(1.3) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
-            cursor: pointer;
-        }
+
         .side-intel-container {
             background: white;
             border-radius: 1.5rem;
             border: 1px solid var(--border);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-soft);
             overflow-y: auto;
             padding: 24px;
         }
+
+        .map-controls {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .control-btn {
+            background: rgba(15, 23, 42, 0.9);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .control-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(13, 148, 136, 0.4);
+        }
+
+        /* Fullscreen-specific overrides */
+        #map-wrapper-main:fullscreen {
+            border-radius: 0;
+            padding: 0;
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
         .map-legend {
             position: absolute;
             bottom: 30px;
             left: 30px;
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(8px);
-            padding: 16px;
-            border-radius: 1rem;
+            padding: 20px;
+            border-radius: 1.25rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
             z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
-        .legend-item { display: flex; align-items: center; margin-bottom: 6px; font-size: 0.75rem; font-weight: 600; }
-        .legend-color { width: 12px; height: 12px; border-radius: 3px; margin-right: 10px; }
-        .map-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 100;
+        .legend-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.8rem; font-weight: 700; }
+        .legend-color { width: 14px; height: 14px; border-radius: 4px; margin-right: 12px; }
+
+        .district-path {
+            transition: fill 0.2s ease, stroke-width 0.2s ease;
         }
-        .control-btn {
-            background: rgba(15, 23, 42, 0.8);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            cursor: pointer;
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        .control-btn:hover { background: var(--primary); }
     </style>
 </head>
 <body style="overflow: hidden;">
@@ -98,43 +122,57 @@
                 <li><a href="index.html"><i class="fa-solid fa-gauge-high"></i> Overview</a></li>
                 <li><a href="map.html" class="active"><i class="fa-solid fa-earth-asia"></i> Geospatial Hub</a></li>
                 <li><a href="clusters.html"><i class="fa-solid fa-diagram-project"></i> Archetype Intel</a></li>
-                <li><a href="segmentation.html"><i class="fa-solid fa-microscope"></i> Decision Space</a></li>
+                <li><a href="segmentation.html"><i class="fa-solid fa-layer-group"></i> Decision Space</a></li>
                 <li><a href="methodology.html"><i class="fa-solid fa-terminal"></i> Methodology</a></li>
             </ul>
         </div>
 
         <main class="main-content">
-            <div class="map-layout">
-                <div id="map-container">
-                    <svg id="map-svg"></svg>
-                    
-                    <div class="map-controls">
-                        <button class="control-btn" id="zoom-in" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
-                        <button class="control-btn" id="zoom-out" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
-                        <button class="control-btn" id="zoom-reset" title="Reset View"><i class="fa-solid fa-expand"></i></button>
-                    </div>
+            <header class="hub-header" style="margin-bottom:15px;">
+                <h2 style="font-size: 1.75rem;">Interactive Regional Prioritization</h2>
+                <p style="opacity: 0.7;">Dynamic geospatial risk assessment across 700+ district operational nodes.</p>
+            </header>
 
-                    <div class="map-legend">
-                        <div style="font-weight: 800; margin-bottom: 12px; letter-spacing: 1px; font-size: 0.7rem;">PRIORITY DOMAINS</div>
-                        <div class="legend-item"><div class="legend-color" style="background:#d946ef"></div> CRITICAL (75-100)</div>
-                        <div class="legend-item"><div class="legend-color" style="background:#8b5cf6"></div> ELEVATED (50-75)</div>
-                        <div class="legend-item"><div class="legend-color" style="background:#06b6d4"></div> STANDARD (25-50)</div>
-                        <div class="legend-item"><div class="legend-color" style="background:#0d9488"></div> BASELINE (0-25)</div>
+            <div class="map-layout">
+                <!-- Immersive Map Wrapper -->
+                <div id="map-wrapper-main">
+                    <div id="map-container">
+                        <svg id="map-svg"></svg>
+                        
+                        <!-- Visualization Controls -->
+                        <div class="map-controls">
+                            <button class="control-btn" id="zoom-expand" title="Maximize Visualization (Fullscreen)">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                            <button class="control-btn" onclick="location.reload()" title="Reset Engine">
+                                <i class="fa-solid fa-rotate"></i>
+                            </button>
+                        </div>
+
+                        <!-- Precision Legend -->
+                        <div class="map-legend">
+                            <div style="font-weight: 900; margin-bottom: 15px; letter-spacing: 2px; font-size: 0.7rem; color: var(--primary);">PRIORITY SPECTRUM</div>
+                            <div class="legend-item"><div class="legend-color" style="background:#C026D3"></div> CRITICAL TIER (OPI 75-100)</div>
+                            <div class="legend-item"><div class="legend-color" style="background:#8B5CF6"></div> ELEVATED (OPI 50-75)</div>
+                            <div class="legend-item"><div class="legend-color" style="background:#6366F1"></div> OPERATIONAL (OPI 25-50)</div>
+                            <div class="legend-item"><div class="legend-color" style="background:#3B82F6"></div> STABLE NODES (OPI 0-25)</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="side-intel-container" id="map-side-intel">
-                    <div class="intel-placeholder">
-                        <i class="fa-solid fa-satellite" style="font-size: 3rem; opacity: 0.1; margin-bottom: 24px;"></i>
-                        <h3>Operational Node Intelligence</h3>
-                        <p style="opacity: 0.6; margin-top: 8px;">Select or hover over a regional unit to extract real-time priority analytics.</p>
+                <!-- Intelligence Panel -->
+                <div class="side-intel-container" id="map-intel-panel">
+                    <div style="text-align:center; padding: 4rem 2rem; opacity: 0.3;">
+                        <i class="fa-solid fa-satellite-dish" style="font-size: 4rem; margin-bottom: 24px;"></i>
+                        <h3 style="font-weight: 900;">GEOSPATIAL INTEL ONLINE</h3>
+                        <p style="font-weight: 700; font-size: 0.9rem; margin-top: 10px;">Select or hover over a regional node to extract tactical decision metrics.</p>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Scripts -->
+    <!-- Initialization Scripts -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="js/main.js"></script>

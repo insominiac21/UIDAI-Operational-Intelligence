@@ -1,7 +1,7 @@
 /**
- * map.js - D3.js Geospatial Engine (Stabilized v11)
- * -----------------------------------------------
- * Source: datta07/INDIAN-SHAPEFILES (37MB Verified)
+ * map.js - D3.js High-Performance Geospatial Engine (v12)
+ * -----------------------------------------------------
+ * Source: maneetgoyal Gist (2MB Simplified)
  */
 
 let Svg, Projection, Path, Zoom, G;
@@ -21,7 +21,7 @@ function normalizeName(name) {
 }
 
 async function initMapIntel() {
-    console.log("Synchronizing Local Geospatial Boundaries...");
+    console.log("Synchronizing Performance-Optimized Boundaries...");
     const container = d3.select('#map-container');
     const width = container.node().clientWidth || 800;
     const height = container.node().clientHeight || 600;
@@ -37,7 +37,7 @@ async function initMapIntel() {
         .style('z-index', '100')
         .html(`
             <i class="fa-solid fa-satellite-dish fa-spin" style="font-size: 2.5rem; color: var(--primary);"></i>
-            <p style="margin-top:12px; font-weight:700; color:var(--text-main);">Calibrating Regional Nodes...</p>
+            <p style="margin-top:12px; font-weight:700; color:var(--text-main);">Optimizing Regional Visualization...</p>
         `);
 
     Svg = d3.select('#map-svg')
@@ -50,15 +50,13 @@ async function initMapIntel() {
     Path = d3.geoPath().projection(Projection);
 
     Zoom = d3.zoom()
-        .scaleExtent([1, 15])
+        .scaleExtent([1, 20])
         .on('zoom', (event) => G.attr('transform', event.transform));
 
     Svg.call(Zoom);
 
-    // Controls
-    d3.select('#zoom-in').on('click', () => Svg.transition().call(Zoom.scaleBy, 1.5));
-    d3.select('#zoom-out').on('click', () => Svg.transition().call(Zoom.scaleBy, 0.6));
-    d3.select('#zoom-reset').on('click', () => Svg.transition().call(Zoom.transform, d3.zoomIdentity));
+    // Expansion Control logic (Browser Fullscreen API)
+    d3.select('#zoom-expand').on('click', () => toggleFullscreen());
 
     try {
         const indiaData = await d3.json(LOCAL_GEO_JSON);
@@ -79,6 +77,7 @@ async function initMapIntel() {
             })
             .style('stroke', '#0F172A')
             .style('stroke-width', '0.2px')
+            .style('transition', 'fill 0.2s')
             .on('mouseover', function(event, d) {
                 const match = matchDistrict(d);
                 if (match) renderSideIntel(match);
@@ -92,58 +91,76 @@ async function initMapIntel() {
                 if (match) navigateToDistrict(match.district);
             });
 
-        console.log("Geospatial Matrix Online (Local Source).");
+        console.log("Geospatial Matrix Online (Simplified Source).");
     } catch (err) {
-        console.error("Map Load Critical Failure (Local):", err);
-        container.select('#map-loader').html('<p style="color:var(--danger)">Geospatial Load Error. Contact Administrator.</p>');
+        console.error("Map Load Failure (Optimized):", err);
+        container.select('#map-loader').html('<p style="color:var(--danger)">Performance Load Error. Data corrupted.</p>');
+    }
+}
+
+function toggleFullscreen() {
+    const elem = document.getElementById('map-wrapper-main');
+    if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => {
+            alert(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
+        });
+        document.getElementById('zoom-expand').innerHTML = '<i class="fa-solid fa-compress"></i>';
+    } else {
+        document.exitFullscreen();
+        document.getElementById('zoom-expand').innerHTML = '<i class="fa-solid fa-expand"></i>';
     }
 }
 
 function matchDistrict(d) {
-    // Handling property names from datta07 source: 'District', 'St_Name'
-    const geoName = normalizeName(d.properties.District || d.properties.district || d.properties.dist_name || d.properties.DISTRICT || "");
-    return State.districts.find(sd => normalizeName(sd.district) === geoName);
+    // Handling property names from manejgoyal source: 'District', 'STATE'
+    const geoName = normalizeName(d.properties.District || d.properties.DISTRICT || "");
+    const geoState = normalizeName(d.properties.STATE || d.properties.state || "");
+    
+    return State.districts.find(sd => 
+        normalizeName(sd.district) === geoName && 
+        normalizeName(sd.state_clean) === geoState
+    );
 }
 
 function renderSideIntel(data) {
-    const panel = d3.select('#map-side-intel');
+    const panel = d3.select('#map-intel-panel');
     
-    // UI logic for Lack of Data notice
+    // UI logic for Lack of Data notice (BOLD RED)
     const hasData = data.OPI > 0;
-    const dataNotice = hasData ? '' : '<div style="background:#fef2f2; color:#dc2626; padding:10px; border-radius:8px; font-size:0.75rem; font-weight:700; margin-bottom:15px; border:1px solid #fee2e2;"><i class="fa-solid fa-triangle-exclamation"></i> Analytical Point: Metric divergence due to lack of available data.</div>';
+    const dataNotice = hasData ? '' : '<div style="background:#fef2f2; color:#dc2626; padding:12px; border-radius:12px; font-size:0.8rem; font-weight:900; margin-bottom:20px; border:2px solid #dc2626; text-transform:uppercase;"><i class="fa-solid fa-triangle-exclamation"></i> CRITICAL DATA DISCLAIMER: DIVERGENCE DUE TO LACK OF AVAILABLE DATA</div>';
 
     panel.html(`
         <div class="intel-brief fade-in">
-            <h2 style="font-weight:900; margin-bottom:5px; color:var(--text-main);">${data.district}</h2>
-            <div style="color:var(--primary); font-weight:800; font-size:0.75rem; margin-bottom:20px; text-transform:uppercase;">
-                ${data.state_clean} • SECTOR Node
+            <h2 style="font-weight:900; margin-bottom:5px; color:var(--text-main); font-size:1.75rem;">${data.district}</h2>
+            <div style="color:var(--primary); font-weight:800; font-size:0.8rem; margin-bottom:20px; text-transform:uppercase; letter-spacing:1px;">
+                ${data.state_clean} • SECTOR CLUSTER
             </div>
 
             ${dataNotice}
 
-            <div class="kpi-card" style="border-left:5px solid ${ColorScale(data.OPI)}; background:#fff; margin-bottom:20px;">
-                <div class="kpi-label">Priority Index</div>
+            <div class="kpi-card" style="border-left:5px solid ${ColorScale(data.OPI)}; background:#fff; margin-bottom:25px; box-shadow:var(--shadow-soft);">
+                <div class="kpi-label">Operational Priority Index</div>
                 <div class="kpi-value" style="color:${ColorScale(data.OPI)}">${Math.round(data.OPI)}</div>
             </div>
 
-            <div class="glass-panel" style="background:#fff; padding:1rem; margin-bottom:15px; cursor:pointer;" onclick="window.location.href='clusters.html#${encodeURIComponent(data.cluster_label)}'">
+            <div class="glass-panel" style="background:#fff; padding:1.25rem; margin-bottom:20px; cursor:pointer; border:1px solid var(--border);" onclick="window.location.href='clusters.html#${encodeURIComponent(data.cluster_label)}'">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <div class="kpi-label">Operational Archetype</div>
-                        <div style="font-weight:700; font-size:1.1rem;">${data.cluster_label}</div>
+                        <div class="kpi-label">Intelligence Archetype</div>
+                        <div style="font-weight:800; font-size:1.1rem; color:var(--text-main);">${data.cluster_label}</div>
                     </div>
-                    <i class="fa-solid fa-arrow-up-right-from-square" style="opacity:0.3; font-size:0.8rem;"></i>
+                    <i class="fa-solid fa-square-poll-vertical" style="opacity:0.3; font-size:1.2rem;"></i>
                 </div>
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">${data.cluster_signature}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:5px; line-height:1.4;">${data.cluster_signature}</div>
             </div>
 
-            <div style="background:#f0fdfa; border:1px solid var(--primary); padding:15px; border-radius:12px; margin-bottom:15px;">
-                <div class="kpi-label">Tactical Reasoning</div>
-                <div style="font-weight:700; font-size:0.9rem; color:var(--primary);">${data.tactical_reason}</div>
+            <div style="background:#f0fdfa; border:1px solid var(--primary); padding:18px; border-radius:16px; margin-bottom:20px;">
+                <div class="kpi-label">Tactical Logistics Reasoning</div>
+                <div style="font-weight:700; font-size:0.9rem; color:var(--primary); line-height:1.5;">${data.tactical_reason}</div>
             </div>
 
-            <button class="discovery-btn w-full mt-4" style="padding:15px;" onclick="navigateToDistrict('${data.district}')">
-                Open Full Strategy Profile <i class="fa-solid fa-arrow-right" style="margin-left:10px;"></i>
+            <button class="discovery-btn w-full mt-4" style="padding:18px; font-weight:900; letter-spacing:1px;" onclick="navigateToDistrict('${data.district}')">
+                ACTIVATE NODE STRATEGY <i class="fa-solid fa-chevron-right" style="margin-left:12px;"></i>
             </button>
         </div>
     `);
