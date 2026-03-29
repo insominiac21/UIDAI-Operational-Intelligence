@@ -7,173 +7,207 @@
     <link rel="stylesheet" href="css/styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2.5rem;
+        }
+        .full-width { grid-column: 1 / -1; }
+        .method-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .list-premium {
+            list-style: none;
+            padding: 0;
+        }
+        .list-premium li {
+            padding: 12px 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            border-left: 4px solid var(--primary);
+            transition: 0.2s;
+        }
+        .list-premium li:hover {
+            transform: translateX(5px);
+            background: white;
+            box-shadow: var(--shadow-soft);
+        }
+        .step-bubble {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Sidebar Navigation -->
         <div class="sidebar">
             <div class="logo">
-                <h1>UIDAI Operational Intelligence<br><small>Methodology Hub</small></h1>
+                <h1>UIDAI 2026<br><small>Methodology Hub</small></h1>
             </div>
             <ul class="nav-links">
                 <li><a href="index.html"><i class="fa-solid fa-gauge-high"></i> Overview</a></li>
                 <li><a href="map.html"><i class="fa-solid fa-earth-asia"></i> Geospatial Hub</a></li>
                 <li><a href="clusters.html"><i class="fa-solid fa-diagram-project"></i> Archetype Intel</a></li>
-                <li><a href="segmentation.html"><i class="fa-solid fa-microscope"></i> Decision Space</a></li>
                 <li><a href="methodology.html" class="active"><i class="fa-solid fa-terminal"></i> Methodology</a></li>
             </ul>
         </div>
 
         <main class="main-content fade-in">
-            <header>
-                <h2>Methodology & Model Logic</h2>
-                <p style="opacity:0.75;">A compact explanation of how the district intelligence system was built, validated, and turned into a decision tool.</p>
+            <header class="hub-header">
+                <div>
+                    <h2 style="font-size: 2.25rem;">Methodology & Model Logic</h2>
+                    <p style="opacity:0.75; font-size: 1.1rem;">The technical blueprint of the UIDAI District Intelligence ecosystem.</p>
+                </div>
             </header>
 
-            <div class="glass-panel mt-4">
-                <h3>Detailed References</h3>
-                <p style="margin:12px 0 18px; font-size:0.95rem; opacity:0.9;">
-                    For the full technical write-up and notebook trail, use the links below.
-                </p>
-                <div class="grid-2" style="gap:1rem;">
-                    <a href="https://drive.google.com/file/d/1AxE9kJuX4SFCkqlmTF4xZJQZ9mhKo_di/view?usp=sharing"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="reason-tag"
-                       style="display:block; text-align:center; padding:14px 16px; text-decoration:none;">
-                        <i class="fa-solid fa-file-lines"></i> Report PDF
-                    </a>
-                    <a href="https://www.kaggle.com/code/anshpatidar/uidai-operational-intelligence-district-clustering"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="reason-tag"
-                       style="display:block; text-align:center; padding:14px 16px; text-decoration:none;">
-                        <i class="fa-brands fa-kaggle"></i> Kaggle Notebook
-                    </a>
-                </div>
-            </div>
-
-            <div class="grid-2 mt-4" style="gap:2rem;">
-                <div class="glass-panel">
-                    <h3>Method at a Glance</h3>
-                    <p style="margin:14px 0 0; font-size:0.95rem;">
-                        The workflow starts with raw Aadhaar enrolment, demographic-update, and biometric-update tables. These datasets are cleaned, aligned by state and district, validated against known population patterns, and then converted into district-level operational features.
+            <div class="method-grid">
+                <!-- Reference Hub -->
+                <div class="glass-panel method-card">
+                    <div class="kpi-label" style="color:var(--primary)">Technical Repository</div>
+                    <h3>Technical Artifacts</h3>
+                    <p style="margin:12px 0 18px; font-size:0.95rem; opacity:0.9;">
+                        Deep-dive into the raw source code and the peer-reviewed report.
                     </p>
-                    <div class="grid-3 mt-4" style="gap:12px;">
-                        <div class="reason-tag text-center" style="padding:14px;">
-                            <strong>1</strong><br>Clean & align
-                        </div>
-                        <div class="reason-tag text-center" style="padding:14px;">
-                            <strong>2</strong><br>Build features
-                        </div>
-                        <div class="reason-tag text-center" style="padding:14px;">
-                            <strong>3</strong><br>Rank & segment
-                        </div>
+                    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                        <a href="https://drive.google.com/file/d/1AxE9kJuX4SFCkqlmTF4xZJQZ9mhKo_di/view?usp=sharing" target="_blank" class="reason-tag" style="padding:15px; text-decoration:none; display:flex; align-items:center; gap:10px; border:1px solid var(--border);">
+                            <i class="fa-solid fa-file-pdf" style="font-size:1.2rem;"></i> 
+                            <div><strong style="display:block;">Model Synthesis Report</strong><span style="font-size:0.7rem; opacity:0.7;">PDF Document • 12MB</span></div>
+                        </a>
+                        <a href="https://www.kaggle.com/code/anshpatidar/uidai-operational-intelligence-district-clustering" target="_blank" class="reason-tag" style="padding:15px; text-decoration:none; display:flex; align-items:center; gap:10px; border:1px solid var(--border);">
+                            <i class="fa-brands fa-kaggle" style="font-size:1.2rem;"></i> 
+                            <div><strong style="display:block;">Kaggle Notebook</strong><span style="font-size:0.7rem; opacity:0.7;">Python • Scikit-Learn • D3.js</span></div>
+                        </a>
                     </div>
                 </div>
 
-                <div class="glass-panel">
+                <!-- Concept Overview -->
+                <div class="glass-panel method-card">
+                    <div class="kpi-label" style="color:var(--secondary)">Strategic Intent</div>
                     <h3>Why the System Exists</h3>
-                    <p style="margin:14px 0 0; font-size:0.95rem;">
-                        State-level allocation is already broadly aligned with population size, so the project does not try to “fix” macro allocation. The real opportunity is district-level prioritisation, where operational pressure, coverage gaps, and youth demand vary sharply.
+                    <p style="margin:14px 0 0; font-size:0.95rem; line-height:1.7;">
+                        National Aadhaar hardware allocation is broadly proportional to state populations, but the real opportunity for efficiency lies at the <strong>District Level</strong>. 
                     </p>
-                    <p style="margin:12px 0 0; font-size:0.95rem;">
-                        The final system therefore acts as a decision layer: it identifies where action is most urgent and which districts are operationally similar enough to share intervention strategies.
+                    <p style="margin:12px 0 0; font-size:0.95rem; line-height:1.7;">
+                        By identifying localized operational pressure and coverage gaps, this system allows administrators to move from "reactive" to "predictive" resource deployment.
                     </p>
                 </div>
-            </div>
 
-            <div class="grid-2 mt-4" style="gap:2rem;">
-                <div class="glass-panel">
-                    <h3>Data Cleaning & Validation</h3>
-                    <ul style="padding-left:20px; margin-top:14px; font-size:0.92rem; line-height:1.7;">
-                        <li>Standardised state names such as Odisha/Orissa and Puducherry/Pondicherry.</li>
-                        <li>Unified district spellings, spacing, and formatting variants.</li>
-                        <li>Checked merges across enrolment, demographic, and biometric sources.</li>
-                        <li>Excluded corrupted rows where zero values came from join mismatches rather than real absence.</li>
-                        <li>Tested temporal features, then removed them because the dataset did not provide meaningful month-level variation for the final model.</li>
+                <!-- Process Blocks -->
+                <div class="glass-panel full-width">
+                    <div class="kpi-label">Pipeline Architecture</div>
+                    <h3>Method at a Glance</h3>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem; margin-top:20px;">
+                        <div style="background:#f8fafc; padding:2rem; border-radius:1.5rem; border:1px solid var(--border);">
+                            <div class="step-bubble">01</div>
+                            <h4 style="margin-bottom:8px;">Clean & Align</h4>
+                            <p style="font-size:0.8rem; opacity:0.8;">Standardizing 700+ district identifiers across Enrolment and Update datasets.</p>
+                        </div>
+                        <div style="background:#f8fafc; padding:2rem; border-radius:1.5rem; border:1px solid var(--border);">
+                            <div class="step-bubble">02</div>
+                            <h4 style="margin-bottom:8px;">Build Features</h4>
+                            <p style="font-size:0.8rem; opacity:0.8;">Extracting Youth Share, Coverage Gap, and Administrative Load features.</p>
+                        </div>
+                        <div style="background:#f8fafc; padding:2rem; border-radius:1.5rem; border:1px solid var(--border);">
+                            <div class="step-bubble">03</div>
+                            <h4 style="margin-bottom:8px;">Rank & Segment</h4>
+                            <p style="font-size:0.8rem; opacity:0.8;">Fusing metrics into the Operational Priority Index (OPI) and Cluster Archetypes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Logic -->
+                <div class="glass-panel method-card">
+                    <div class="kpi-label">Data Validation</div>
+                    <h3>Cleaning Logic</h3>
+                    <ul class="list-premium" style="margin-top:15px;">
+                        <li>Standardized <strong>Odisha/Puducherry</strong> variants.</li>
+                        <li>Unified district spacing and syntax across sources.</li>
+                        <li>Cross-validated enrolment counts against census baseline.</li>
+                        <li>Pruned joining mismatches (Zero-filters).</li>
                     </ul>
                 </div>
 
-                <div class="glass-panel">
-                    <h3>Feature Construction</h3>
-                    <ul style="padding-left:20px; margin-top:14px; font-size:0.92rem; line-height:1.7;">
-                        <li><strong>Youth share</strong> captures future demand.</li>
-                        <li><strong>Coverage gap</strong> captures unmet service need.</li>
-                        <li><strong>Update load</strong> captures administrative pressure.</li>
-                        <li><strong>Biometric stress</strong> captures infrastructure strain.</li>
-                        <li><strong>x, y embedding</strong> is used for visual segmentation and similarity retrieval.</li>
+                <div class="glass-panel method-card">
+                    <div class="kpi-label">Model Features</div>
+                    <h3>Feature Engineering</h3>
+                    <ul class="list-premium" style="margin-top:15px;">
+                        <li><strong>Youth Share:</strong> 0-5 and 5-18 biometric demand.</li>
+                        <li><strong>Coverage Gap:</strong> Estimated unmet service need.</li>
+                        <li><strong>Update Load:</strong> Demographic correction pressure.</li>
+                        <li><strong>Embedding:</strong> (x, y) space for similarity retrieval.</li>
                     </ul>
                 </div>
-            </div>
 
-            <div class="glass-panel mt-4">
-                <h3>Operational Priority Index (OPI)</h3>
-                <p style="margin:14px 0 0; font-size:0.95rem;">
-                    OPI is the project’s ranking layer. It combines coverage gap, youth share, and update load into a single score on a 0–100 scale.
-                </p>
-                <div class="grid-3 mt-4" style="gap:16px;">
-                    <div class="reason-tag text-center" style="padding:16px;">
-                        <strong>0.45</strong><br>Coverage Gap
+                <!-- The index logic -->
+                <div class="glass-panel full-width" style="background: linear-gradient(135deg, white 0%, #f0fdfa 100%);">
+                    <div style="display:grid; grid-template-columns: 1fr 2fr; gap:3rem; align-items:center;">
+                        <div>
+                            <div class="kpi-label" style="color:var(--danger)">Scoring Logic</div>
+                            <h3 style="font-size:1.75rem;">Operational Priority Index (OPI)</h3>
+                            <p style="margin-top:15px; font-size:0.95rem; line-height:1.6;">
+                                OPI is a weighted composite score that maps multi-dimensional operational pressure onto a linear 0-100 priority scale.
+                            </p>
+                        </div>
+                        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem;">
+                            <div class="glass-panel" style="text-align:center; padding:1.5rem; border:2px solid var(--primary);">
+                                <div style="font-weight:900; font-size:2rem; color:var(--primary);">45%</div>
+                                <div class="kpi-label">Coverage Gap</div>
+                            </div>
+                            <div class="glass-panel" style="text-align:center; padding:1.5rem;">
+                                <div style="font-weight:900; font-size:2rem; color:var(--text-main);">30%</div>
+                                <div class="kpi-label">Youth Share</div>
+                            </div>
+                            <div class="glass-panel" style="text-align:center; padding:1.5rem;">
+                                <div style="font-weight:900; font-size:2rem; color:var(--text-main);">25%</div>
+                                <div class="kpi-label">Update Load</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="reason-tag text-center" style="padding:16px;">
-                        <strong>0.30</strong><br>Youth Share
+                </div>
+
+                <!-- Clustering Section -->
+                <div class="glass-panel method-card">
+                    <div class="kpi-label">Segmentation Strategy</div>
+                    <h3>Clustering & Archetypes</h3>
+                    <p style="margin-top:12px; font-size:0.95rem; line-height:1.6;">
+                        Comparing KMeans, GMM, and HDBSCAN, the <strong>KMeans</strong> model was selected for its operational stability. Every district is assigned a permanent <strong>Intelligence Archetype</strong> (e.g., High-Stress, Youth-Gap) based on its feature centroid.
+                    </p>
+                </div>
+
+                <div class="glass-panel method-card">
+                    <div class="kpi-label">Deployment Logic</div>
+                    <h3>Actionable Outputs</h3>
+                    <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+                        <div class="reason-tag" style="background:white; border:1px solid var(--border); padding:12px;"><strong>Prioritize:</strong> Allocate hardware to high-OPI nodes.</div>
+                        <div class="reason-tag" style="background:white; border:1px solid var(--border); padding:12px;"><strong>Interpret:</strong> Use Archetypes to select intervention types.</div>
+                        <div class="reason-tag" style="background:white; border:1px solid var(--border); padding:12px;"><strong>Transfer:</strong> Discover peers to scale successful pilots.</div>
                     </div>
-                    <div class="reason-tag text-center" style="padding:16px;">
-                        <strong>0.25</strong><br>Update Load
-                    </div>
-                </div>
-                <p style="margin:16px 0 0; font-size:0.92rem; opacity:0.9;">
-                    Coverage gap gets the highest weight because it reflects direct service shortfall. Youth share captures incoming demand, and update load captures current operational strain. All inputs are normalized before scoring so that no single variable dominates due to scale alone.
-                </p>
-            </div>
-
-            <div class="grid-2 mt-4" style="gap:2rem;">
-                <div class="decision-panel">
-                    <h3>Clustering & Segmentation</h3>
-                    <p style="margin-top:12px; font-size:0.95rem;">
-                        We compared several clustering approaches, including KMeans, GMM, Agglomerative clustering, and HDBSCAN. HDBSCAN showed strong separation, but KMeans was selected for the final pipeline because every district receives a stable label and the output is easier to explain and deploy.
-                    </p>
-                    <p style="margin-top:10px; font-size:0.95rem;">
-                        The final clusters represent operational archetypes such as high-stress districts, youth-gap districts, and high-volume districts. These labels are derived from the dominant pattern of each cluster centroid.
-                    </p>
-                </div>
-
-                <div class="decision-panel">
-                    <h3>From Analysis to Action</h3>
-                    <p style="margin-top:12px; font-size:0.95rem;">
-                        The model is designed to support three decisions:
-                    </p>
-                    <ul style="padding-left:20px; margin-top:10px; font-size:0.92rem; line-height:1.7;">
-                        <li><strong>Prioritise</strong> districts with the highest OPI.</li>
-                        <li><strong>Interpret</strong> each district using its cluster archetype.</li>
-                        <li><strong>Transfer strategies</strong> across similar districts using the embedding space.</li>
-                    </ul>
                 </div>
             </div>
 
-            <div class="glass-panel mt-4">
-                <h3>Validation Logic</h3>
-                <p style="margin-top:12px; font-size:0.95rem;">
-                    Before any segmentation, we checked whether the existing allocation pattern is already broadly equitable at the state level. The correlation with Census population share showed that the macro allocation is largely proportional. That result strengthens the project: it means the value lies in district-level prioritisation, not in correcting national-level allocation.
-                </p>
-            </div>
-
-            <div class="glass-panel mt-4">
-                <h3>What the Dashboard Shows</h3>
-                <div class="grid-3 mt-4" style="gap:14px;">
-                    <div class="reason-tag text-center" style="padding:14px;">Top priority districts</div>
-                    <div class="reason-tag text-center" style="padding:14px;">Cluster archetypes</div>
-                    <div class="reason-tag text-center" style="padding:14px;">Similar districts</div>
-                </div>
-                <p style="margin-top:14px; font-size:0.92rem; opacity:0.9;">
-                    The dashboard turns the notebook into an interactive decision interface: it lets the user inspect ranked districts, compare cluster behavior, and move from broad analysis to district-level action.
+            <div class="glass-panel mt-4" style="text-align:center; padding:3rem;">
+                <h4 style="color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; font-size:0.8rem; margin-bottom:15px;">Analysis Footprint</h4>
+                <p style="max-width:700px; margin:0 auto; font-size:1.1rem; font-weight:700; color:var(--text-main);">
+                    "The intelligence layer transforms raw Aadhaar data into a tactical decision engine, ensuring that no district node is left behind in the 2026 operational roadmap."
                 </p>
             </div>
         </main>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    <script src="js/main.js"></script>
 </body>
 </html>

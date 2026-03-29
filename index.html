@@ -91,6 +91,11 @@
                         </button>
                     </div>
 
+                    <div style="max-width: 600px; margin: 1.5rem auto 1rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px dashed var(--border);">
+                        <strong><i class="fa-solid fa-brain"></i> Semantic Methodology:</strong> 
+                        Matches are retrieved by calculating the <strong>Euclidean Distance</strong> between nodes in a high-dimensional feature space (Youth Share, Coverage Gap, Update Load). This ensures peers are operationally identical, even if geographically distant.
+                    </div>
+
                     <div class="peer-toggle-group" id="peer-count-toggle">
                         <button class="peer-toggle-btn active" data-count="5">Top 5 Discovery</button>
                         <button class="peer-toggle-btn" data-count="10">Top 10 Discovery</button>
@@ -129,8 +134,9 @@
         };
 
         function renderHeroStats() {
-            document.getElementById('kpi-total-districts').innerText = State.districts.length;
-            const avgOpi = State.districts.reduce((a, b) => a + b.OPI, 0) / State.districts.length;
+            const total = State.districts.length;
+            document.getElementById('kpi-total-districts').innerText = total;
+            const avgOpi = State.districts.reduce((a, b) => a + b.OPI, 0) / total;
             document.getElementById('kpi-avg-opi').innerText = Math.round(avgOpi);
         }
 
@@ -186,7 +192,11 @@
             const peers = getSimilarDistrictsEuclidean(target, State.districts, currentPeerLimit);
             const grid = document.getElementById('similarity-results-grid');
             
-            grid.innerHTML = peers.map(p => `
+            grid.innerHTML = peers.map(p => {
+                const hasData = p.OPI > 0;
+                const dataNotice = hasData ? '' : '<div style="font-size:0.65rem; color:#dc2626; font-weight:700; background:#fef2f2; padding:4px 8px; border-radius:4px; margin-top:8px;"><i class="fa-solid fa-triangle-exclamation"></i> Lack of available data</div>';
+                
+                return `
                 <div class="glass-panel fade-in" style="padding:1.5rem; cursor:pointer; border-radius:1.5rem; border:1px solid var(--border);" onclick="navigateToDistrict('${p.district}')">
                      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
                         <div>
@@ -195,13 +205,19 @@
                         </div>
                         <div class="opi-badge" style="background:${getTierColorForProfile(p.OPI)}1a; color:${getTierColorForProfile(p.OPI)}; border:none; padding: 6px 12px; font-weight:900;">${Math.round(p.OPI)}</div>
                     </div>
-                    <div style="margin-top:15px; display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:1.2rem; color:var(--primary); opacity:0.8;"><i class="fa-solid fa-microchip"></i></span>
-                        <div style="font-size:0.85rem; font-weight:700; color:var(--text-main);">${p.cluster_label}</div>
+                    
+                    ${dataNotice}
+
+                    <div style="margin-top:15px; display:flex; align-items:center; gap:10px; padding:10px; background:#f8fafc; border-radius:10px;" onclick="event.stopPropagation(); window.location.href='clusters.html#${encodeURIComponent(p.cluster_label)}'">
+                        <i class="fa-solid fa-diagram-project" style="color:var(--primary); font-size:0.9rem;"></i>
+                        <div style="flex-grow:1;">
+                            <div style="font-size:0.8rem; font-weight:800; color:var(--text-main);">${p.cluster_label}</div>
+                            <div style="font-size:0.65rem; color:var(--text-muted); line-height:1.2;">Archetype Intel &rarr;</div>
+                        </div>
                     </div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:5px; line-height:1.3;">${p.cluster_signature}</div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
             
             grid.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }

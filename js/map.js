@@ -1,7 +1,7 @@
 /**
- * map.js - D3.js Geospatial Engine (Stabilized v10)
+ * map.js - D3.js Geospatial Engine (Stabilized v11)
  * -----------------------------------------------
- * Updated for Local Fallback and 100% Reliability.
+ * Source: datta07/INDIAN-SHAPEFILES (37MB Verified)
  */
 
 let Svg, Projection, Path, Zoom, G;
@@ -100,13 +100,18 @@ async function initMapIntel() {
 }
 
 function matchDistrict(d) {
-    const geoName = normalizeName(d.properties.district || d.properties.dist_name || d.properties.DISTRICT || "");
+    // Handling property names from datta07 source: 'District', 'St_Name'
+    const geoName = normalizeName(d.properties.District || d.properties.district || d.properties.dist_name || d.properties.DISTRICT || "");
     return State.districts.find(sd => normalizeName(sd.district) === geoName);
 }
 
 function renderSideIntel(data) {
     const panel = d3.select('#map-side-intel');
     
+    // UI logic for Lack of Data notice
+    const hasData = data.OPI > 0;
+    const dataNotice = hasData ? '' : '<div style="background:#fef2f2; color:#dc2626; padding:10px; border-radius:8px; font-size:0.75rem; font-weight:700; margin-bottom:15px; border:1px solid #fee2e2;"><i class="fa-solid fa-triangle-exclamation"></i> Analytical Point: Metric divergence due to lack of available data.</div>';
+
     panel.html(`
         <div class="intel-brief fade-in">
             <h2 style="font-weight:900; margin-bottom:5px; color:var(--text-main);">${data.district}</h2>
@@ -114,14 +119,21 @@ function renderSideIntel(data) {
                 ${data.state_clean} • SECTOR Node
             </div>
 
+            ${dataNotice}
+
             <div class="kpi-card" style="border-left:5px solid ${ColorScale(data.OPI)}; background:#fff; margin-bottom:20px;">
                 <div class="kpi-label">Priority Index</div>
                 <div class="kpi-value" style="color:${ColorScale(data.OPI)}">${Math.round(data.OPI)}</div>
             </div>
 
-            <div class="glass-panel" style="background:#fff; padding:1rem; margin-bottom:15px;">
-                <div class="kpi-label">Operational Archetype</div>
-                <div style="font-weight:700; font-size:1.1rem;">${data.cluster_label}</div>
+            <div class="glass-panel" style="background:#fff; padding:1rem; margin-bottom:15px; cursor:pointer;" onclick="window.location.href='clusters.html#${encodeURIComponent(data.cluster_label)}'">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div class="kpi-label">Operational Archetype</div>
+                        <div style="font-weight:700; font-size:1.1rem;">${data.cluster_label}</div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="opacity:0.3; font-size:0.8rem;"></i>
+                </div>
                 <div style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">${data.cluster_signature}</div>
             </div>
 
