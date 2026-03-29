@@ -1,172 +1,171 @@
 /**
- * map.js - D3.js High-Performance Geospatial Engine (v12)
- * -----------------------------------------------------
- * Source: maneetgoyal Gist (2MB Simplified)
+ * map.js - Unified Geospatial Engine (v18 Restoration)
+ * ---------------------------------------------------
+ * Absolute Parity with Reference Repository 'app.js' logic.
+ * Uses unified 'district_intelligence.json' for maximum performance.
  */
 
-let Svg, Projection, Path, Zoom, G;
-const LOCAL_GEO_JSON = 'data/india_district.json';
+const MAP_CONFIG = {
+    GEO_JSON: './data/district_intelligence.json', // Synthesized unified data
+    TRANSITION: 200
+};
 
-const ColorScale = d3.scaleThreshold()
-    .domain([25, 50, 75])
-    .range(['#3B82F6', '#6366F1', '#8B5CF6', '#C026D3']); // Blue -> Indigo -> Violet -> Magenta
+let currentFilter = 'OPI';
 
-function normalizeName(name) {
-    if (!name) return "";
-    return name.toLowerCase().trim()
-        .replace(/\s+/g, '')
-        .replace('district', '')
-        .replace('and', '&')
-        .replace('-', '');
-}
-
+/**
+ * Hub Initialization (Restored from Scratch)
+ */
 async function initMapIntel() {
-    console.log("Synchronizing Performance-Optimized Boundaries...");
-    const container = d3.select('#map-container');
-    const width = container.node().clientWidth || 800;
-    const height = container.node().clientHeight || 600;
+    const container = document.getElementById('map-container');
+    const svg = d3.select('#map-svg');
+    if (!container || !svg.node()) return;
 
-    // Loading State
-    container.append('div')
-        .attr('id', 'map-loader')
-        .style('position', 'absolute')
-        .style('top', '50%')
-        .style('left', '50%')
-        .style('transform', 'translate(-50%, -50%)')
-        .style('text-align', 'center')
-        .style('z-index', '100')
-        .html(`
-            <i class="fa-solid fa-satellite-dish fa-spin" style="font-size: 2.5rem; color: var(--primary);"></i>
-            <p style="margin-top:12px; font-weight:700; color:var(--text-main);">Optimizing Regional Visualization...</p>
-        `);
-
-    Svg = d3.select('#map-svg')
-        .attr('viewBox', `0 0 ${width} ${height}`)
-        .attr('preserveAspectRatio', 'xMidYMid meet');
-
-    G = Svg.append('g').attr('id', 'map-g');
-
-    Projection = d3.geoMercator();
-    Path = d3.geoPath().projection(Projection);
-
-    Zoom = d3.zoom()
-        .scaleExtent([1, 20])
-        .on('zoom', (event) => G.attr('transform', event.transform));
-
-    Svg.call(Zoom);
-
-    // Expansion Control logic (Browser Fullscreen API)
-    d3.select('#zoom-expand').on('click', () => toggleFullscreen());
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    svg.attr('viewBox', `0 0 ${width} ${height}`);
 
     try {
-        const indiaData = await d3.json(LOCAL_GEO_JSON);
-        container.select('#map-loader').remove();
+        console.log("Synthesizing Unified Geospatial Engine (Ref Parity)...");
+        const india = await d3.json(MAP_CONFIG.GEO_JSON);
+        
+        // RECONSTRUCTED: d3.geoMercator().fitSize() from ref repo
+        const projection = d3.geoMercator().fitSize([width, height], india);
+        const path = d3.geoPath().projection(projection);
 
-        // Fit India to Viewport
-        Projection.fitSize([width, height], indiaData);
+        // Clear existing groups for re-init
+        svg.selectAll('.map-g').remove();
+        const g = svg.append('g').attr('class', 'map-g');
 
-        G.selectAll('.district-path')
-            .data(indiaData.features)
+        // Render District Nodes (Direct property access for performance)
+        g.selectAll('.district-path')
+            .data(india.features)
             .enter()
             .append('path')
-            .attr('d', Path)
+            .attr('d', path)
             .attr('class', 'district-path')
-            .style('fill', d => {
-                const match = matchDistrict(d);
-                return match ? ColorScale(match.OPI) : '#f1f5f9';
-            })
-            .style('stroke', '#0F172A')
-            .style('stroke-width', '0.2px')
-            .style('transition', 'fill 0.2s')
+            .style('fill', d => getColorForDistrict(d.properties[currentFilter], currentFilter))
+            .style('stroke', 'rgba(15, 23, 42, 0.3)')
+            .style('stroke-width', '0.5')
+            .style('cursor', 'pointer')
             .on('mouseover', function(event, d) {
-                const match = matchDistrict(d);
-                if (match) renderSideIntel(match);
-                d3.select(this).raise().style('stroke-width', '1.5px').style('filter', 'brightness(1.1)');
+                d3.select(this)
+                    .transition().duration(100)
+                    .style('stroke', '#fff')
+                    .style('stroke-width', '2')
+                    .style('filter', 'brightness(1.15) drop-shadow(0 0 5px rgba(255,255,255,0.4))');
+                
+                updateSideIntel(d.properties);
             })
             .on('mouseout', function() {
-                d3.select(this).style('stroke-width', '0.2px').style('filter', 'none');
+                d3.select(this)
+                    .transition().duration(200)
+                    .style('stroke', 'rgba(15, 23, 42, 0.3)')
+                    .style('stroke-width', '0.5')
+                    .style('filter', 'brightness(1)');
             })
-            .on('click', (event, d) => {
-                const match = matchDistrict(d);
-                if (match) navigateToDistrict(match.district);
+            .on('click', function(event, d) {
+                navigateToDistrict(d.properties.district);
             });
 
-        console.log("Geospatial Matrix Online (Simplified Source).");
-    } catch (err) {
-        console.error("Map Load Failure (Optimized):", err);
-        container.select('#map-loader').html('<p style="color:var(--danger)">Performance Load Error. Data corrupted.</p>');
+        // RECONSTRUCTED: Zoom Logic from ref repo
+        const zoom = d3.zoom()
+            .scaleExtent([1, 10])
+            .on('zoom', (event) => g.attr('transform', event.transform));
+        
+        svg.call(zoom);
+
+        // Control Center Binding
+        setupMapControls(svg, g, zoom);
+
+    } catch (error) {
+        console.error("Geospatial Sync Critical Failure:", error);
     }
 }
 
-function toggleFullscreen() {
-    const elem = document.getElementById('map-wrapper-main');
-    if (!document.fullscreenElement) {
-        elem.requestFullscreen().catch(err => {
-            alert(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
-        });
-        document.getElementById('zoom-expand').innerHTML = '<i class="fa-solid fa-compress"></i>';
+/**
+ * RECONSTRUCTED: getColorForDistrict using d3.scaleThreshold()
+ */
+function getColorForDistrict(val, filter) {
+    if (!val || val === 0) return '#cbd5e1'; // No Data Detection
+
+    let scale;
+    if (filter === 'OPI') {
+        scale = d3.scaleThreshold()
+            .domain([25, 50, 75])
+            .range(['#3b82f6', '#6366f1', '#8b5cf6', '#d946ef']);
+    } else if (filter === 'coverage_gap') {
+        scale = d3.scaleThreshold()
+            .domain([0.3, 0.5, 0.7])
+            .range(['#10b981', '#f59e0b', '#ef4444', '#991b1b']);
     } else {
-        document.exitFullscreen();
-        document.getElementById('zoom-expand').innerHTML = '<i class="fa-solid fa-expand"></i>';
+        scale = d3.scaleThreshold()
+            .domain([15, 25, 40])
+            .range(['#6366f1', '#8b5cf6', '#a855f7', '#c026d3']);
     }
+
+    return scale(val);
 }
 
-function matchDistrict(d) {
-    // Handling property names from manejgoyal source: 'District', 'STATE'
-    const geoName = normalizeName(d.properties.District || d.properties.DISTRICT || "");
-    const geoState = normalizeName(d.properties.STATE || d.properties.state || "");
-    
-    return State.districts.find(sd => 
-        normalizeName(sd.district) === geoName && 
-        normalizeName(sd.state_clean) === geoState
-    );
-}
+/**
+ * Side Intel Orchestration (Direct Access)
+ */
+function updateSideIntel(props) {
+    const panel = document.getElementById('map-intel-panel');
+    if (!panel) return;
 
-function renderSideIntel(data) {
-    const panel = d3.select('#map-intel-panel');
-    
-    // UI logic for Lack of Data notice (BOLD RED)
-    const hasData = data.OPI > 0;
-    const dataNotice = hasData ? '' : '<div style="background:#fef2f2; color:#dc2626; padding:12px; border-radius:12px; font-size:0.8rem; font-weight:900; margin-bottom:20px; border:2px solid #dc2626; text-transform:uppercase;"><i class="fa-solid fa-triangle-exclamation"></i> CRITICAL DATA DISCLAIMER: DIVERGENCE DUE TO LACK OF AVAILABLE DATA</div>';
+    const hasData = props.has_data;
+    const alert = hasData ? '' : '<div style="background:#fef2f2; color:#b91c1c; padding:12px; border-radius:12px; font-weight:900; font-size:0.75rem; border:2px solid #ef4444; margin-bottom:15px; text-transform:uppercase;"><i class="fa-solid fa-triangle-exclamation"></i> Critical: Missing Data</div>';
 
-    panel.html(`
-        <div class="intel-brief fade-in">
-            <h2 style="font-weight:900; margin-bottom:5px; color:var(--text-main); font-size:1.75rem;">${data.district}</h2>
-            <div style="color:var(--primary); font-weight:800; font-size:0.8rem; margin-bottom:20px; text-transform:uppercase; letter-spacing:1px;">
-                ${data.state_clean} • SECTOR CLUSTER
+    panel.innerHTML = `
+        <div class="fade-in">
+            ${alert}
+            <div style="font-size:0.7rem; font-weight:900; color:var(--primary); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Operational Intelligence Profile</div>
+            <h2 style="font-size:2rem; font-weight:900; color:var(--text-main); line-height:1.1;">${props.district || 'Unidentified Node'}</h2>
+            <p style="opacity:0.6; font-size:0.95rem; font-weight:700;">${props.state_clean || ''}</p>
+            
+            <div style="margin:25px 0; padding:24px; background:linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border:1px solid var(--border); border-radius:1.5rem; text-align:center;">
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:900; text-transform:uppercase; letter-spacing:1px;">Priority Index (OPI)</div>
+                <div style="font-size:3.5rem; font-weight:900; color:var(--primary); margin:5px 0;">${Math.round(props.OPI || 0)}</div>
+                <div class="reason-tag" style="margin-top:10px; display:inline-block; font-weight:700;">${props.tactical_reason || 'Baseline Monitoring Tier'}</div>
             </div>
 
-            ${dataNotice}
-
-            <div class="kpi-card" style="border-left:5px solid ${ColorScale(data.OPI)}; background:#fff; margin-bottom:25px; box-shadow:var(--shadow-soft);">
-                <div class="kpi-label">Operational Priority Index</div>
-                <div class="kpi-value" style="color:${ColorScale(data.OPI)}">${Math.round(data.OPI)}</div>
-            </div>
-
-            <div class="glass-panel" style="background:#fff; padding:1.25rem; margin-bottom:20px; cursor:pointer; border:1px solid var(--border);" onclick="window.location.href='clusters.html#${encodeURIComponent(data.cluster_label)}'">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div class="kpi-label">Intelligence Archetype</div>
-                        <div style="font-weight:800; font-size:1.1rem; color:var(--text-main);">${data.cluster_label}</div>
-                    </div>
-                    <i class="fa-solid fa-square-poll-vertical" style="opacity:0.3; font-size:1.2rem;"></i>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="stat-card-mini" style="background:white; border:1px solid var(--border); padding:15px; border-radius:1rem;">
+                    <div style="font-size:0.65rem; font-weight:900; opacity:0.5; text-transform:uppercase;">Coverage Gap</div>
+                    <div style="font-weight:900; font-size:1.1rem;">${((props.coverage_gap || 0) * 100).toFixed(1)}%</div>
                 </div>
-                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:5px; line-height:1.4;">${data.cluster_signature}</div>
+                <div class="stat-card-mini" style="background:white; border:1px solid var(--border); padding:15px; border-radius:1rem;">
+                    <div style="font-size:0.65rem; font-weight:900; opacity:0.5; text-transform:uppercase;">Youth Segment</div>
+                    <div style="font-weight:900; font-size:1.1rem;">${(props.youth_pct || 0).toFixed(1)}%</div>
+                </div>
             </div>
 
-            <div style="background:#f0fdfa; border:1px solid var(--primary); padding:18px; border-radius:16px; margin-bottom:20px;">
-                <div class="kpi-label">Tactical Logistics Reasoning</div>
-                <div style="font-weight:700; font-size:0.9rem; color:var(--primary); line-height:1.5;">${data.tactical_reason}</div>
-            </div>
-
-            <button class="discovery-btn w-full mt-4" style="padding:18px; font-weight:900; letter-spacing:1px;" onclick="navigateToDistrict('${data.district}')">
-                ACTIVATE NODE STRATEGY <i class="fa-solid fa-chevron-right" style="margin-left:12px;"></i>
-            </button>
+            <button class="discovery-btn" onclick="navigateToDistrict('${props.district}')" style="width:100%; margin-top:25px; padding:18px; font-weight:900; background:var(--primary); color:white; border-radius:1rem;">Extract Complete Profile &rarr;</button>
         </div>
-    `);
+    `;
 }
 
-// Global hook
-window.onDashboardDataLoaded = () => {
-    initMapIntel();
-};
+/**
+ * Control Center (Expansion + Reset)
+ */
+function setupMapControls(svg, g, zoom) {
+    const expandBtn = document.getElementById('zoom-expand');
+    if (expandBtn) {
+        expandBtn.onclick = () => {
+            const wrapper = document.getElementById('map-wrapper-main');
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                wrapper.requestFullscreen();
+            }
+        };
+    }
+
+    // Auto-update scale on fullscreen change
+    document.addEventListener('fullscreenchange', () => {
+        setTimeout(initMapIntel, 200); // Re-initialize to fix fitSize dimensions
+    });
+}
+
+// Global Lifecycle Orchestration
+window.onDashboardDataLoaded = initMapIntel;
