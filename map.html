@@ -128,37 +128,17 @@
         </div>
 
         <main class="main-content">
-            <header class="hub-header" style="margin-bottom:15px;">
-                <h2 style="font-size: 1.75rem;">Interactive Regional Prioritization</h2>
-                <p style="opacity: 0.7;">Dynamic geospatial risk assessment across 700+ district operational nodes.</p>
+            <header class="hub-header">
+                <div>
+                    <h2>India: Geospatial District Analysis</h2>
+                    <p style="opacity:0.7;">Select a metric below. Hover for details. Click for comprehensive node analysis.</p>
+                </div>
+                <div class="header-actions">
+                    <button id="zoom-expand" class="map-btn"><i class="fa-solid fa-expand"></i> Immersive View</button>
+                    <button onclick="window.location.reload()" class="map-btn"><i class="fa-solid fa-sync"></i> Reset</button>
+                </div>
             </header>
 
-            <div class="map-layout">
-                <!-- Immersive Map Wrapper -->
-                <div id="map-wrapper-main">
-                    <div id="map-container">
-                        <svg id="map-svg"></svg>
-                        
-                        <!-- Visualization Controls -->
-                        <div class="map-controls">
-                            <button class="control-btn" id="zoom-expand" title="Maximize Visualization (Fullscreen)">
-                                <i class="fa-solid fa-expand"></i>
-                            </button>
-                            <button class="control-btn" onclick="location.reload()" title="Reset Engine">
-                                <i class="fa-solid fa-rotate"></i>
-                            </button>
-                        </div>
-
-                        <!-- Precision Legend -->
-                        <div class="map-legend">
-                            <div style="font-weight: 900; margin-bottom: 15px; letter-spacing: 2px; font-size: 0.7rem; color: var(--primary);">PRIORITY SPECTRUM</div>
-                            <div class="legend-item"><div class="legend-color" style="background:#C026D3"></div> CRITICAL TIER (OPI 75-100)</div>
-                            <div class="legend-item"><div class="legend-color" style="background:#8B5CF6"></div> ELEVATED (OPI 50-75)</div>
-                            <div class="legend-item"><div class="legend-color" style="background:#6366F1"></div> OPERATIONAL (OPI 25-50)</div>
-                            <div class="legend-item"><div class="legend-color" style="background:#3B82F6"></div> STABLE NODES (OPI 0-25)</div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Intelligence Panel -->
                 <div class="side-intel-container" id="map-intel-panel">

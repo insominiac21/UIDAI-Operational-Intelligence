@@ -315,3 +315,104 @@ h1, h2, h3, h4 {
     font-size: 0.7rem;
     font-weight: 600;
 }
+
+/* =============================================================
+   GEOSPATIAL HUB RESTORATION (REF PARITY)
+   ============================================================= */
+
+.filter-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13, 148, 136, 0.1);
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 0 15px rgba(13, 148, 136, 0.4);
+}
+
+.map-wrapper {
+    position: relative;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 2rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-bold);
+}
+
+.map-stats {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid var(--border);
+    min-width: 160px;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(13, 148, 136, 0.1);
+    border-color: var(--primary);
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--primary);
+    line-height: 1.2;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#india-map svg {
+    border-radius: 1.5rem;
+    background: #f8fafc;
+}
+
+/* Animations from Ref Repo */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#selected-state {
+    color: var(--text-main);
+    font-family: 'Outfit', sans-serif;
+}
