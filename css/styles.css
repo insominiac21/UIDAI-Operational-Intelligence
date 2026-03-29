@@ -412,7 +412,85 @@ h1, h2, h3, h4 {
     to { opacity: 1; transform: translateY(0); }
 }
 
-#selected-state {
-    color: var(--text-main);
-    font-family: 'Outfit', sans-serif;
+/* Archetype Deep-Intel Profile Restoration (v22) */
+.archetype-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 1rem;
 }
+
+.archetype-card {
+    border-left: 6px solid var(--primary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.archetype-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-bold);
+    border-left-color: var(--secondary);
+}
+
+.archetype-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, transparent 50%, rgba(13, 148, 136, 0.05) 50%);
+    border-radius: 0 0 0 100%;
+}
+
+.benchmarks {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 1rem;
+}
+
+.benchmark-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.benchmark-item span {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.benchmark-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    border-radius: 4px;
+    transition: width 1s ease-out;
+}
+
+/* Operational Status Tokens */
+.status-badge {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    background: rgba(13, 148, 136, 0.1);
+    color: var(--primary);
+}
+

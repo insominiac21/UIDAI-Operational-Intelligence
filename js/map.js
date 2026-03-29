@@ -27,9 +27,10 @@ async function initIndiaMap() {
     const g = svg.append('g');
 
     try {
-        console.log("Synthesizing Absolute Geospatial Hub (v21 Stabilization)...");
-        // Root-relative path to resolve Vercel fetch failures
-        const india = await d3.json('india_district.json');
+        console.log("Synthesizing Absolute Geospatial Hub (v22 Stabilization)...");
+        // Vercel-compatible relative pathing
+        const india = await d3.json('data/india_district.json');
+
 
         
         // Exact Parity: d3.geoMercator().fitSize()

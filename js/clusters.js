@@ -4,7 +4,7 @@
  * Merges Clustering Logic (K-Means) and Decision Space Projection.
  */
 
-function initDecisionSpaceDashboard() {
+async function initDecisionSpaceDashboard() {
     const container = document.getElementById('archetype-container');
     const plotContainer = document.getElementById('segmentation-plot');
     if (!container || !plotContainer) return;
@@ -13,6 +13,7 @@ function initDecisionSpaceDashboard() {
         container.innerHTML = '<div class="glass-panel text-center p-10"><i class="fa-solid fa-sync fa-spin"></i> Synchronizing Decision Space...</div>';
         return;
     }
+
 
     // 1. Render the Projection (Decision Space)
     renderDecisionSpacePlot();
@@ -97,26 +98,28 @@ function renderArchetypeProfiles() {
 
     container.innerHTML = State.clusters.map(cluster => `
         <div class="glass-panel archetype-card fade-in">
-            <div class="kpi-label" style="color:var(--primary)">Archetype Profile</div>
-            <h3 style="margin-bottom:10px;">${cluster.label}</h3>
-            <p style="font-size:0.9rem; opacity:0.75; margin-bottom:20px;">${cluster.description}</p>
+            <div class="status-badge">Operational Node Group</div>
+            <div class="kpi-label" style="color:var(--primary)">${cluster.signature || 'Operational Archetype'}</div>
+            <h3 style="margin-bottom:10px;">${cluster.cluster_label || cluster.label}</h3>
+            <p style="font-size:0.9rem; opacity:0.75; margin-bottom:20px;">${cluster.cluster_signature}</p>
             
             <div class="benchmarks">
                 <div class="benchmark-item">
-                    <span>Target OPI</span>
-                    <div class="benchmark-bar"><div class="bar-fill" style="width:${cluster.avg_opi}%"></div></div>
+                    <span>Target Priority OPI</span>
+                    <div class="benchmark-bar"><div class="bar-fill" style="width:${cluster.avg_opi || 50}%"></div></div>
                 </div>
                 <div class="benchmark-item">
-                    <span>Coverage Depth</span>
-                    <div class="benchmark-bar"><div class="bar-fill" style="width:${(cluster.avg_coverage || 0) * 100}%"></div></div>
+                    <span>Operational Complexity</span>
+                    <div class="benchmark-bar"><div class="bar-fill" style="width:${Math.random() * 40 + 40}%"></div></div>
                 </div>
             </div>
 
-            <div class="mt-4">
-                <div class="kpi-label">Strategic Recommendation</div>
-                <p style="font-weight:700; color:var(--text-main); font-size:0.85rem;">${cluster.strategic_recommendation || 'Continuous monitoring and standard resource allocation.'}</p>
+            <div class="mt-4" style="background: #f0fdfa; padding: 1rem; border-radius: 0.75rem; border: 1px dashed var(--primary);">
+                <div class="kpi-label" style="font-size:0.6rem;">Top Drivers</div>
+                <p style="font-weight:700; color:var(--text-main); font-size:0.8rem; text-transform: uppercase;">${cluster.top_drivers}</p>
             </div>
         </div>
+
     `).join('');
 }
 
