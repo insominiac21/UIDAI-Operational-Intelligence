@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Methodology | UIDAI Decision Support</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
     <div class="app-container">
         <!-- Sidebar Navigation -->
         <div class="sidebar">
             <div class="logo">
-                <h1>UIDAI 2026<br><small>Methodology Hub</small></h1>
+                <h1>UIDAI Operational Intelligence<br><small>Methodology Hub</small></h1>
             </div>
             <ul class="nav-links">
                 <li><a href="index.html"><i class="fa-solid fa-gauge-high"></i> Overview</a></li>
@@ -27,54 +27,152 @@
         <main class="main-content fade-in">
             <header>
                 <h2>Methodology & Model Logic</h2>
-                <p style="opacity:0.7;">Technical audit of the data pipeline and decision heuristics.</p>
+                <p style="opacity:0.75;">A compact explanation of how the district intelligence system was built, validated, and turned into a decision tool.</p>
             </header>
+
+            <div class="glass-panel mt-4">
+                <h3>Detailed References</h3>
+                <p style="margin:12px 0 18px; font-size:0.95rem; opacity:0.9;">
+                    For the full technical write-up and notebook trail, use the links below.
+                </p>
+                <div class="grid-2" style="gap:1rem;">
+                    <a href="https://drive.google.com/file/d/1AxE9kJuX4SFCkqlmTF4xZJQZ9mhKo_di/view?usp=sharing"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="reason-tag"
+                       style="display:block; text-align:center; padding:14px 16px; text-decoration:none;">
+                        <i class="fa-solid fa-file-lines"></i> Report PDF
+                    </a>
+                    <a href="https://www.kaggle.com/code/anshpatidar/uidai-operational-intelligence-district-clustering"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="reason-tag"
+                       style="display:block; text-align:center; padding:14px 16px; text-decoration:none;">
+                        <i class="fa-brands fa-kaggle"></i> Kaggle Notebook
+                    </a>
+                </div>
+            </div>
 
             <div class="grid-2 mt-4" style="gap:2rem;">
                 <div class="glass-panel">
-                    <h3>Operational Priority Index (OPI)</h3>
-                    <p style="margin:15px 0; font-size:0.95rem;">
-                        The OPI is a <strong>weighted composite score (0-100)</strong> used to rank districts for intervention. It accounts for three primary dimensions:
+                    <h3>Method at a Glance</h3>
+                    <p style="margin:14px 0 0; font-size:0.95rem;">
+                        The workflow starts with raw Aadhaar enrolment, demographic-update, and biometric-update tables. These datasets are cleaned, aligned by state and district, validated against known population patterns, and then converted into district-level operational features.
                     </p>
-                    <ul style="padding-left: 20px; font-size:0.9rem;">
-                        <li><strong>Infrastructural Stress (35%)</strong>: Log-scaled biometric failure rates and update bottlenecks.</li>
-                        <li><strong>Demand Velocity (35%)</strong>: Percent of school-age children (youth_pct) and enrollment trends.</li>
-                        <li><strong>Coverage Deficiency (30%)</strong>: Current enrollment gap relative to projected demographics.</li>
-                    </ul>
+                    <div class="grid-3 mt-4" style="gap:12px;">
+                        <div class="reason-tag text-center" style="padding:14px;">
+                            <strong>1</strong><br>Clean & align
+                        </div>
+                        <div class="reason-tag text-center" style="padding:14px;">
+                            <strong>2</strong><br>Build features
+                        </div>
+                        <div class="reason-tag text-center" style="padding:14px;">
+                            <strong>3</strong><br>Rank & segment
+                        </div>
+                    </div>
                 </div>
 
                 <div class="glass-panel">
-                    <h3>Intelligence Archetypes (Clustering)</h3>
-                    <p style="margin:15px 0; font-size:0.95rem;">
-                        We use <strong>K-Means++ Clustering</strong> to segment districts into 6 distinct profiles. The model is trained on:
+                    <h3>Why the System Exists</h3>
+                    <p style="margin:14px 0 0; font-size:0.95rem;">
+                        State-level allocation is already broadly aligned with population size, so the project does not try to “fix” macro allocation. The real opportunity is district-level prioritisation, where operational pressure, coverage gaps, and youth demand vary sharply.
                     </p>
-                    <ul style="padding-left: 20px; font-size:0.9rem;">
-                        <li>Log-scaled Update Load</li>
-                        <li>Log-scaled Biometric Stress</li>
-                        <li>Youth Concentration (0-14 segment)</li>
-                        <li>Absolute Coverage Gap</li>
-                    </ul>
-                    <p style="margin-top:10px; font-size:0.75rem; opacity:0.6;">
-                        *Dimension reduction via UMAP $(x, y)$ is used for spatial visualization.
+                    <p style="margin:12px 0 0; font-size:0.95rem;">
+                        The final system therefore acts as a decision layer: it identifies where action is most urgent and which districts are operationally similar enough to share intervention strategies.
                     </p>
                 </div>
             </div>
 
-            <div class="decision-panel mt-4">
-                <h3>Decision Heuristics (DSS Implementation)</h3>
-                <p style="margin-top:10px;">
-                    This platform uses <strong>Tiered Logic</strong> to translate raw priority scores into tactical actions:
-                </p>
-                <div class="grid-3 mt-4" style="gap:15px;">
-                    <div class="reason-tag text-center" style="padding:15px; background:var(--danger); color:white;">OPI > 75: Critical Deployment</div>
-                    <div class="reason-tag text-center" style="padding:15px; background:var(--accent); color:white;">OPI > 50: High-Priority Review</div>
-                    <div class="reason-tag text-center" style="padding:15px; background:var(--secondary); color:white;">OPI > 25: Baseline Optimization</div>
+            <div class="grid-2 mt-4" style="gap:2rem;">
+                <div class="glass-panel">
+                    <h3>Data Cleaning & Validation</h3>
+                    <ul style="padding-left:20px; margin-top:14px; font-size:0.92rem; line-height:1.7;">
+                        <li>Standardised state names such as Odisha/Orissa and Puducherry/Pondicherry.</li>
+                        <li>Unified district spellings, spacing, and formatting variants.</li>
+                        <li>Checked merges across enrolment, demographic, and biometric sources.</li>
+                        <li>Excluded corrupted rows where zero values came from join mismatches rather than real absence.</li>
+                        <li>Tested temporal features, then removed them because the dataset did not provide meaningful month-level variation for the final model.</li>
+                    </ul>
                 </div>
+
+                <div class="glass-panel">
+                    <h3>Feature Construction</h3>
+                    <ul style="padding-left:20px; margin-top:14px; font-size:0.92rem; line-height:1.7;">
+                        <li><strong>Youth share</strong> captures future demand.</li>
+                        <li><strong>Coverage gap</strong> captures unmet service need.</li>
+                        <li><strong>Update load</strong> captures administrative pressure.</li>
+                        <li><strong>Biometric stress</strong> captures infrastructure strain.</li>
+                        <li><strong>x, y embedding</strong> is used for visual segmentation and similarity retrieval.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-panel mt-4">
+                <h3>Operational Priority Index (OPI)</h3>
+                <p style="margin:14px 0 0; font-size:0.95rem;">
+                    OPI is the project’s ranking layer. It combines coverage gap, youth share, and update load into a single score on a 0–100 scale.
+                </p>
+                <div class="grid-3 mt-4" style="gap:16px;">
+                    <div class="reason-tag text-center" style="padding:16px;">
+                        <strong>0.45</strong><br>Coverage Gap
+                    </div>
+                    <div class="reason-tag text-center" style="padding:16px;">
+                        <strong>0.30</strong><br>Youth Share
+                    </div>
+                    <div class="reason-tag text-center" style="padding:16px;">
+                        <strong>0.25</strong><br>Update Load
+                    </div>
+                </div>
+                <p style="margin:16px 0 0; font-size:0.92rem; opacity:0.9;">
+                    Coverage gap gets the highest weight because it reflects direct service shortfall. Youth share captures incoming demand, and update load captures current operational strain. All inputs are normalized before scoring so that no single variable dominates due to scale alone.
+                </p>
+            </div>
+
+            <div class="grid-2 mt-4" style="gap:2rem;">
+                <div class="decision-panel">
+                    <h3>Clustering & Segmentation</h3>
+                    <p style="margin-top:12px; font-size:0.95rem;">
+                        We compared several clustering approaches, including KMeans, GMM, Agglomerative clustering, and HDBSCAN. HDBSCAN showed strong separation, but KMeans was selected for the final pipeline because every district receives a stable label and the output is easier to explain and deploy.
+                    </p>
+                    <p style="margin-top:10px; font-size:0.95rem;">
+                        The final clusters represent operational archetypes such as high-stress districts, youth-gap districts, and high-volume districts. These labels are derived from the dominant pattern of each cluster centroid.
+                    </p>
+                </div>
+
+                <div class="decision-panel">
+                    <h3>From Analysis to Action</h3>
+                    <p style="margin-top:12px; font-size:0.95rem;">
+                        The model is designed to support three decisions:
+                    </p>
+                    <ul style="padding-left:20px; margin-top:10px; font-size:0.92rem; line-height:1.7;">
+                        <li><strong>Prioritise</strong> districts with the highest OPI.</li>
+                        <li><strong>Interpret</strong> each district using its cluster archetype.</li>
+                        <li><strong>Transfer strategies</strong> across similar districts using the embedding space.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-panel mt-4">
+                <h3>Validation Logic</h3>
+                <p style="margin-top:12px; font-size:0.95rem;">
+                    Before any segmentation, we checked whether the existing allocation pattern is already broadly equitable at the state level. The correlation with Census population share showed that the macro allocation is largely proportional. That result strengthens the project: it means the value lies in district-level prioritisation, not in correcting national-level allocation.
+                </p>
+            </div>
+
+            <div class="glass-panel mt-4">
+                <h3>What the Dashboard Shows</h3>
+                <div class="grid-3 mt-4" style="gap:14px;">
+                    <div class="reason-tag text-center" style="padding:14px;">Top priority districts</div>
+                    <div class="reason-tag text-center" style="padding:14px;">Cluster archetypes</div>
+                    <div class="reason-tag text-center" style="padding:14px;">Similar districts</div>
+                </div>
+                <p style="margin-top:14px; font-size:0.92rem; opacity:0.9;">
+                    The dashboard turns the notebook into an interactive decision interface: it lets the user inspect ranked districts, compare cluster behavior, and move from broad analysis to district-level action.
+                </p>
             </div>
         </main>
     </div>
 
-    <!-- Initialization Support -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="js/main.js"></script>
 </body>
