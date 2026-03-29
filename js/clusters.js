@@ -1,88 +1,124 @@
 /**
- * clusters.js - Intelligence Archetype Profiling (v12 Stabilization)
- * -------------------------------------------------------------
- * Translates model clusters into actionable operational archetypes.
+ * clusters.js - Integrated Operational Decision Space (v20)
+ * --------------------------------------------------------
+ * Merges Clustering Logic (K-Means) and Decision Space Projection.
  */
 
-function initArchetypeView() {
-    console.log("Initializing Archetype Strategy Views...");
-    renderArchetypeProfiles();
-}
-
-function renderArchetypeProfiles() {
+function initDecisionSpaceDashboard() {
     const container = document.getElementById('archetype-container');
-    if (!container) return;
+    const plotContainer = document.getElementById('segmentation-plot');
+    if (!container || !plotContainer) return;
 
-    // DEFENSIVE CHECK: Ensure State.clusters is an array before mapping
-    if (!State.clusters || !Array.isArray(State.clusters) || State.clusters.length === 0) {
-        console.warn("Archetype dataset syncing... (Retrying)");
-        container.innerHTML = '<div class="glass-panel text-center p-10"><i class="fa-solid fa-sync fa-spin"></i> Synchronizing Archetype Centroids...</div>';
+    if (!State.districts || State.districts.length === 0) {
+        container.innerHTML = '<div class="glass-panel text-center p-10"><i class="fa-solid fa-sync fa-spin"></i> Synchronizing Decision Space...</div>';
         return;
     }
 
-    container.innerHTML = State.clusters.map(c => `
-        <div class="glass-panel archetype-card fade-in" id="${encodeURIComponent(c.cluster_label)}">
-            <div class="archetype-header">
-                <div>
-                    <h3 style="color:var(--primary); font-size:1.4rem;">${c.cluster_label}</h3>
-                    <div style="font-size:0.8rem; opacity:0.6; margin-top:5px;">${c.n_districts || '...'} Managed Operational Nodes</div>
-                </div>
-                <div class="tier-badge">Tier ${parseInt(c.cluster) + 1}</div>
-            </div>
+    // 1. Render the Projection (Decision Space)
+    renderDecisionSpacePlot();
 
-            <div class="archetype-stats">
-                <div class="sig-pill"><strong>Signature:</strong> ${c.cluster_signature}</div>
-            </div>
+    // 2. Render Cluster Share Stats (Blatant View)
+    renderClusterStats();
 
-            <div class="archetype-content">
-                <div class="strategy-box" style="background:#f8fafc; border:1px solid var(--border); border-radius:15px; padding:20px; margin-top:20px;">
-                    <h4 style="margin-bottom:10px;"><i class="fa-solid fa-bullseye"></i> Recommended Strategy</h4>
-                    <p style="font-size:0.9rem; line-height:1.6; color:var(--text-main);">
-                        ${getRecommendedStrategy(c.cluster_label)}
-                    </p>
-                </div>
-
-                <div class="representative-nodes" style="margin-top:25px;">
-                    <h4 style="margin-bottom:10px; font-size:0.85rem; opacity:0.7;">Archetype Benchmarks (Scale)</h4>
-                    <div class="benchmark-grid" style="display:flex; flex-wrap:wrap; gap:10px;">
-                        ${renderBenchmarks(c.cluster)}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `).join('');
-
-    console.log(`Archetype Grid Synthesized: ${State.clusters.length} Profiles Online.`);
+    // 3. Render Archetype Profiles
+    renderArchetypeProfiles();
 }
 
-function getRecommendedStrategy(label) {
-    const strategies = {
-        "High Stress Urban Systems": "Prioritize high-capacity biometric hardware upgrades and multi-operator enrollment centers to absorb peak transactional load in dense zones.",
-        "Extreme Youth Gap Districts": "Launch aggressive mobile registration units focused on secondary schools and decentralized community health centers to bridge the enrollment deficit.",
-        "High Volume Infrastructure Hubs": "Maintain existing resource levels while implementing throughput monitoring to ensure sustained operational stability.",
-        "Stress Anomaly Districts": "Perform immediate operational audit. Disproportionately high stress relative to volume suggests equipment failure or training deficiencies.",
-        "Youth + Emerging Load Districts": "Deployment of flexible 'pop-up' centers for targeted seasonal enrollment drives aligned with academic calendars.",
-        "Mixed Operational Districts": "Secondary priority. Perform quarterly monitoring for metric drift toward high-stress or high-gap archetypes."
+/**
+ * Renders the Plotly 2D projection
+ */
+function renderDecisionSpacePlot() {
+    const container = document.getElementById('segmentation-plot');
+    const traces = {};
+    
+    State.districts.forEach(d => {
+        const label = d.cluster_label || 'Default Node';
+        if (!traces[label]) {
+            traces[label] = {
+                x: [], y: [], text: [],
+                name: label, mode: 'markers', type: 'scatter',
+                marker: { size: 10, opacity: 0.7, line: { width: 1, color: '#f8fafc' } }
+            };
+        }
+        traces[label].x.push(d.x);
+        traces[label].y.push(d.y);
+        traces[label].text.push(`${d.district}<br>OPI: ${Math.round(d.OPI)}<br>${d.tactical_reason}`);
+    });
+
+    const data = Object.values(traces);
+    const layout = {
+        title: { text: 'Mathematical Projection of Operational Similarity', font: { family: 'Outfit', size: 16 } },
+        font: { family: 'Inter' },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        hovermode: 'closest',
+        margin: { t: 50, b: 60, l: 60, r: 40 },
+        showlegend: true,
+        xaxis: { showgrid: false, zeroline: false, title: 'Factor 1 (Activity Intensity)' },
+        yaxis: { showgrid: false, zeroline: false, title: 'Factor 2 (Complexity)' },
+        legend: { orientation: 'h', y: -0.2 }
     };
-    return strategies[label] || "Perform site-specific operational review to determine resource requirements.";
+
+    Plotly.newPlot(container, data, layout, { responsive: true, displayModeBar: false });
+    
+    container.on('plotly_click', (data) => {
+        const dName = data.points[0].text.split('<br>')[0];
+        navigateToDistrict(dName);
+    });
 }
 
-function renderBenchmarks(clusterId) {
-    if (!State.districts || State.districts.length === 0) return '...Synchronizing Districts';
+/**
+ * Calculates and Renders the blatant Cluster Stats
+ */
+function renderClusterStats() {
+    const statsContainer = document.getElementById('cluster-share-stats');
+    const counts = {};
     
-    // Pick 3 stable districts for this cluster
-    const matches = State.districts.filter(d => parseInt(d.cluster) === parseInt(clusterId)).slice(0, 3);
-    
-    if (matches.length === 0) return '<small style="opacity:0.5;">No active benchmark units loaded.</small>';
+    State.districts.forEach(d => {
+        const label = d.cluster_label || 'Unclassified';
+        counts[label] = (counts[label] || 0) + 1;
+    });
 
-    return matches.map(m => `
-        <div class="benchmark-chip" style="background:white; border:1px solid var(--border); padding:8px 12px; border-radius:10px; font-size:0.8rem; font-weight:700; cursor:pointer;" onclick="navigateToDistrict('${m.district}')">
-            ${capitalize(m.district)} <i class="fa-solid fa-chevron-right" style="font-size:0.6rem; margin-left:5px; opacity:0.3;"></i>
+    statsContainer.innerHTML = Object.entries(counts).map(([label, count]) => `
+        <div class="kpi-card" style="padding:1.25rem;">
+            <div class="kpi-label" style="font-size:0.6rem;">${label}</div>
+            <div class="kpi-value" style="font-size:1.5rem; color:var(--primary);">${count}</div>
+            <div style="font-size:0.65rem; opacity:0.6; font-weight:700;">Nodes in Archetype</div>
         </div>
     `).join('');
 }
 
-// Hook into data load
-window.onDashboardDataLoaded = () => {
-    initArchetypeView();
-};
+/**
+ * Renders the detailed Archetype profiles
+ */
+function renderArchetypeProfiles() {
+    const container = document.getElementById('archetype-container');
+    if (!State.clusters || State.clusters.length === 0) return;
+
+    container.innerHTML = State.clusters.map(cluster => `
+        <div class="glass-panel archetype-card fade-in">
+            <div class="kpi-label" style="color:var(--primary)">Archetype Profile</div>
+            <h3 style="margin-bottom:10px;">${cluster.label}</h3>
+            <p style="font-size:0.9rem; opacity:0.75; margin-bottom:20px;">${cluster.description}</p>
+            
+            <div class="benchmarks">
+                <div class="benchmark-item">
+                    <span>Target OPI</span>
+                    <div class="benchmark-bar"><div class="bar-fill" style="width:${cluster.avg_opi}%"></div></div>
+                </div>
+                <div class="benchmark-item">
+                    <span>Coverage Depth</span>
+                    <div class="benchmark-bar"><div class="bar-fill" style="width:${(cluster.avg_coverage || 0) * 100}%"></div></div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="kpi-label">Strategic Recommendation</div>
+                <p style="font-weight:700; color:var(--text-main); font-size:0.85rem;">${cluster.strategic_recommendation || 'Continuous monitoring and standard resource allocation.'}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Global Lifecycle Hook
+window.onDashboardDataLoaded = initDecisionSpaceDashboard;

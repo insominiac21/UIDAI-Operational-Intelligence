@@ -18,22 +18,45 @@
             <ul class="nav-links">
                 <li><a href="index.html"><i class="fa-solid fa-gauge-high"></i> Overview</a></li>
                 <li><a href="map.html"><i class="fa-solid fa-earth-asia"></i> Geospatial Hub</a></li>
-                <li><a href="clusters.html" class="active"><i class="fa-solid fa-diagram-project"></i> Archetype Intel</a></li>
-                <li><a href="segmentation.html"><i class="fa-solid fa-layer-group"></i> Decision Space</a></li>
+                <li><a href="clusters.html" class="active"><i class="fa-solid fa-diagram-project"></i> Operational Decision Space</a></li>
                 <li><a href="methodology.html"><i class="fa-solid fa-terminal"></i> Methodology</a></li>
             </ul>
+
         </div>
 
         <main class="main-content fade-in">
             <header>
-                <h2>Operational Archetypes</h2>
-                <p style="opacity:0.7;">Segment-specific strategy for targeted hardware and personnel intervention.</p>
+                <h2>Operational Decision Space</h2>
+                <p style="opacity:0.7;">Mathematical grouping of 700+ districts via K-Means Clustering.</p>
             </header>
 
-            <div id="archetype-container" style="margin-top: 30px;">
-                <!-- JS Populated cards -->
-                <div class="glass-panel text-center p-10">
-                    <p>Compiling regional profiles...</p>
+            <!-- Decision Space Projection (Integrated v20) -->
+            <div class="glass-panel mt-4" style="padding:0; overflow:hidden;">
+                <div id="segmentation-plot" style="height: 500px; width:100%;"></div>
+            </div>
+
+            <!-- KMeans Intelligence Layer (v20 Blatant View) -->
+            <div class="glass-panel mt-4" style="background: linear-gradient(135deg, white 0%, #f8fafc 100%);">
+                <div class="kpi-label" style="color:var(--primary)">Model Logic & Tactical Archetypes</div>
+                <h3>K-Means Clustering: How we group districts</h3>
+                <p style="margin-bottom:20px; font-size:0.95rem; line-height:1.6;">
+                    <strong>K-Means is a mathematical logic</strong> that scans all 700+ districts across 4 performance metrics (OPI, Coverage, Youth, Update Load). 
+                    It finds districts that "behave" the same way and groups them into <strong>Archetypes</strong>.
+                </p>
+                
+                <div class="kpi-grid" id="cluster-share-stats" style="grid-template-columns: repeat(4, 1fr); margin-top:20px;">
+                    <!-- Counts will be injected via JS -->
+                    <div class="kpi-card" style="padding:1rem;">
+                        <div class="kpi-label">Syncing...</div>
+                        <div class="kpi-value" style="font-size:1.5rem;">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h3 style="margin-bottom:20px; color:var(--text-main); font-weight:900;">Archetype Deep-Intel Profiles</h3>
+                <div id="archetype-container" class="archetype-grid">
+                    <!-- Cards will be injected by clusters.js -->
                 </div>
             </div>
         </main>

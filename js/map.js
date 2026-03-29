@@ -1,14 +1,14 @@
 /**
- * map.js - Absolute Engine Restoration (v19)
+ * map.js - Absolute Engine Restoration (v20)
  * -----------------------------------------
- * Ported directly from reference_repo/app.js aesthetic.
- * Adapted for 700+ District Nodes & Dynamic CSV Joins.
+ * Identical D3 logic to reference_repo/app.js.
+ * Guaranteed Vercel/GitHub Pages path resolution.
  */
 
 let currentFilter = 'OPI'; 
 
 /**
- * Restoration Init
+ * Hub Convergence (Restoration Init)
  */
 async function initIndiaMap() {
     const container = document.getElementById('india-map');
@@ -27,8 +27,9 @@ async function initIndiaMap() {
     const g = svg.append('g');
 
     try {
-        console.log("Restoring Geospatial Engine from Reference Source...");
-        const india = await d3.json('./data/india_district.json');
+        console.log("Synthesizing Absolute Geospatial Hub (v20 Restoration)...");
+        // VERCEL-SAFE PATHING
+        const india = await d3.json('data/india_district.json');
         
         // Exact Parity: d3.geoMercator().fitSize()
         const projection = d3.geoMercator().fitSize([width, height], india);
@@ -48,10 +49,10 @@ async function initIndiaMap() {
             .on('mouseover', function (event, d) {
                 const dName = (d.properties.district || d.properties.DISTRICT || d.properties.dtname || "").toLowerCase();
                 d3.select(this)
-                    .transition().duration(200)
+                    .transition().duration(150)
                     .attr('stroke', '#fff')
                     .attr('stroke-width', 2)
-                    .style('filter', 'brightness(1.2)');
+                    .style('filter', 'brightness(1.15)');
 
                 updateMapStats(dName);
             })
@@ -71,26 +72,24 @@ async function initIndiaMap() {
 
         // Exact Parity: Zoom Behavior
         const zoom = d3.zoom()
-            .scaleExtent([1, 8])
+            .scaleExtent([1, 10])
             .on('zoom', (event) => g.attr('transform', event.transform));
         
         svg.call(zoom);
 
     } catch (error) {
-        console.error("Geospatial Restoration Failure:", error);
+        console.error("Geospatial Sync Critical Failure:", error);
+        container.innerHTML = `<div class='glass-panel text-center' style='padding:4rem;'><i class='fa-solid fa-triangle-exclamation fa-2x' style='color:var(--danger)'></i><p style='margin-top:15px; font-weight:700;'>Telemetry Data Link Broken: 404/Null</p><p style='font-size:0.8rem; opacity:0.6;'>Critical error while retrieving data/india_district.json</p></div>`;
     }
 }
 
 /**
- * Exact Parity: Dynamic Color Scaling
+ * Reference Color Scaling (Threshold Spec)
  */
 function getColorForDistrict(d, filter) {
-    const props = d.properties;
-    const dName = (props.district || props.DISTRICT || props.dtname || "").toLowerCase();
-    
-    // Join with State data in memory (Fixes 404 issues)
+    const dName = (d.properties.district || d.properties.DISTRICT || d.properties.dtname || "").toLowerCase();
     const csvData = State.districts.find(sd => (sd.district || "").toLowerCase() === dName);
-    if (!csvData) return '#cbd5e1'; // Missing Data Light Grey
+    if (!csvData) return '#cbd5e1'; 
 
     const val = parseFloat(csvData[filter]) || 0;
     if (val === 0) return '#cbd5e1';
@@ -99,28 +98,28 @@ function getColorForDistrict(d, filter) {
     if (filter === 'OPI') {
         colorScale = d3.scaleThreshold()
             .domain([25, 50, 75])
-            .range(['#3b82f6', '#6366f1', '#8b5cf6', '#d946ef']); // Vibrant Spectrum
+            .range(['#3b82f6', '#6366f1', '#8b5cf6', '#d946ef']);
     } else if (filter === 'coverage_gap') {
         colorScale = d3.scaleThreshold()
             .domain([0.3, 0.5, 0.7])
-            .range(['#10b981', '#f59e0b', '#ef4444', '#dc2626']); // Risk Intensity
+            .range(['#10b981', '#f59e0b', '#ef4444', '#dc2626']); 
     } else {
         colorScale = d3.scaleThreshold()
             .domain([15, 25, 40])
-            .range(['#3b82f6', '#8b5cf6', '#a855f7', '#c026d3']); // General Metric
+            .range(['#3b82f6', '#8b5cf6', '#a855f7', '#c026d3']);
     }
 
     return colorScale(val);
 }
 
 /**
- * Exact Parity: Map Stats Panel Updates
+ * Map Intelligence Panel
  */
 function updateMapStats(dName) {
     if (dName === 'India') {
         document.getElementById('selected-state').textContent = 'India Hub';
         document.getElementById('metric-value').textContent = '--';
-        document.getElementById('metric-label').textContent = 'Select Node';
+        document.getElementById('metric-label').textContent = 'Node Data Selection';
         document.getElementById('priority-level').textContent = 'Standard';
         document.getElementById('priority-level').style.color = 'var(--primary)';
         return;
@@ -131,7 +130,16 @@ function updateMapStats(dName) {
 
     let priority = 'Standard';
     let val = parseFloat(csvData[currentFilter]) || 0;
-    let label = currentFilter.replace('_', ' ').toUpperCase();
+    
+    // v20: Simple English Metric Labels
+    let labels = {
+        'OPI': 'Priority Hub Score',
+        'youth_pct': 'Youth Opportunity % (Schools)',
+        'coverage_gap': 'Un-enrolled Population Gap',
+        'log_update_load': 'Technical Center Stress'
+    };
+    
+    let label = labels[currentFilter] || currentFilter.replace('_', ' ').toUpperCase();
     let displayVal = val.toFixed(1);
 
     if (currentFilter === 'OPI') {
@@ -149,19 +157,12 @@ function updateMapStats(dName) {
     document.getElementById('metric-label').textContent = label;
     document.getElementById('priority-level').textContent = priority;
 
-    // Aesthetic Priority Color Mapping
     const color = (priority === 'Critical') ? '#dc2626' : (priority === 'High' ? '#f59e0b' : 'var(--primary)');
     document.getElementById('priority-level').style.color = color;
-
-    // Trigger Animations
-    document.querySelectorAll('.stat-card').forEach(card => {
-        card.style.animation = 'none';
-        setTimeout(() => card.style.animation = 'fadeInUp 0.5s ease-out', 10);
-    });
 }
 
 /**
- * Filter Control Initialization
+ * UI State Binding
  */
 function initFilters() {
     const filterButtons = document.querySelectorAll('.filter-btn');
@@ -171,7 +172,6 @@ function initFilters() {
             this.classList.add('active');
             currentFilter = this.dataset.filter;
             
-            // Re-render map colors
             d3.selectAll('.district-path')
                 .transition().duration(500)
                 .attr('fill', d => getColorForDistrict(d, currentFilter));
@@ -181,9 +181,6 @@ function initFilters() {
     });
 }
 
-/**
- * Fullscreen Expansion (Restored from Scratch)
- */
 function setupExpansion() {
     const expandBtn = document.getElementById('zoom-expand');
     if (!expandBtn) return;
@@ -198,7 +195,7 @@ function setupExpansion() {
     };
 }
 
-// Hook into the dynamic data load event
+// Lifecycle Sync
 window.onDashboardDataLoaded = () => {
     initIndiaMap();
     initFilters();
