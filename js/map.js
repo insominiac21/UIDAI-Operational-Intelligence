@@ -5,7 +5,7 @@
  * Guaranteed Vercel/GitHub Pages path resolution.
  */
 
-let currentFilter = 'OPI'; 
+let currentFilter = 'OPI';
 
 /**
  * Hub Convergence (Restoration Init)
@@ -32,7 +32,7 @@ async function initIndiaMap() {
         const india = await d3.json('data/india_district.json');
 
 
-        
+
         // Exact Parity: d3.geoMercator().fitSize()
         const projection = d3.geoMercator().fitSize([width, height], india);
         const path = d3.geoPath().projection(projection);
@@ -76,7 +76,7 @@ async function initIndiaMap() {
         const zoom = d3.zoom()
             .scaleExtent([1, 10])
             .on('zoom', (event) => g.attr('transform', event.transform));
-        
+
         svg.call(zoom);
 
     } catch (error) {
@@ -91,7 +91,7 @@ async function initIndiaMap() {
 function getColorForDistrict(d, filter) {
     const dName = (d.properties.district || d.properties.DISTRICT || d.properties.dtname || "").toLowerCase();
     const csvData = State.districts.find(sd => (sd.district || "").toLowerCase() === dName);
-    if (!csvData) return '#cbd5e1'; 
+    if (!csvData) return '#cbd5e1';
 
     const val = parseFloat(csvData[filter]) || 0;
     if (val === 0) return '#cbd5e1';
@@ -104,7 +104,7 @@ function getColorForDistrict(d, filter) {
     } else if (filter === 'coverage_gap') {
         colorScale = d3.scaleThreshold()
             .domain([0.3, 0.5, 0.7])
-            .range(['#10b981', '#f59e0b', '#ef4444', '#dc2626']); 
+            .range(['#10b981', '#f59e0b', '#ef4444', '#dc2626']);
     } else {
         colorScale = d3.scaleThreshold()
             .domain([15, 25, 40])
@@ -132,7 +132,7 @@ function updateMapStats(dName) {
 
     let priority = 'Standard';
     let val = parseFloat(csvData[currentFilter]) || 0;
-    
+
     // v20: Simple English Metric Labels
     let labels = {
         'OPI': 'Priority Hub Score',
@@ -140,7 +140,7 @@ function updateMapStats(dName) {
         'coverage_gap': 'Un-enrolled Population Gap',
         'log_update_load': 'Technical Center Stress'
     };
-    
+
     let label = labels[currentFilter] || currentFilter.replace('_', ' ').toUpperCase();
     let displayVal = val.toFixed(1);
 
@@ -173,11 +173,11 @@ function initFilters() {
             filterButtons.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             currentFilter = this.dataset.filter;
-            
+
             d3.selectAll('.district-path')
                 .transition().duration(500)
                 .attr('fill', d => getColorForDistrict(d, currentFilter));
-            
+
             updateMapStats('India');
         });
     });
@@ -186,7 +186,7 @@ function initFilters() {
 function setupExpansion() {
     const expandBtn = document.getElementById('zoom-expand');
     if (!expandBtn) return;
-    
+
     expandBtn.onclick = () => {
         const wrapper = document.getElementById('map-wrapper-main');
         if (document.fullscreenElement) {
