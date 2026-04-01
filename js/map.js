@@ -1,19 +1,19 @@
 /**
- * map.js - Self-Contained Geospatial Engine (v25)
- * ------------------------------------------------
- * Loads GeoJSON + CSV in parallel via Promise.all.
- * Zero dependency on main.js lifecycle or State timing.
- * Based exactly on reference_repo/app.js pattern.
+ * map.js - State-Level Geospatial Engine (v26)
+ * ---------------------------------------------
+ * Uses reference_repo's india-states.json (confirmed working with D3).
+ * Aggregates district-level CSV metrics to state level for coloring.
+ * Self-contained: loads GeoJSON + CSV in parallel via Promise.all.
  */
 
 'use strict';
 
-let currentFilter = 'OPI';
-let mapG = null;
-let mapDistricts = []; // local copy, independent of State
+let currentFilter  = 'OPI';
+let mapG           = null;
+let stateMetrics   = {}; // { stateName_lower: { OPI, coverage_gap, youth_pct, log_update_load } }
 
-const DISTRICT_CSV = './data/uidai_district_model_table.csv';
-const GEOJSON_URL  = 'india_district.json'; // served from project root
+const DISTRICT_CSV  = './data/uidai_district_model_table.csv';
+const GEOJSON_URL   = 'india-states.json'; // reference repo file — confirmed working
 
 // ─── Boot ──────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function () {
@@ -25,7 +25,6 @@ async function bootMap() {
     const container = document.getElementById('india-map');
     if (!container) return;
 
-    // Load GeoJSON + CSV in parallel — no race condition possible
     let india, csvRows;
     try {
         [india, csvRows] = await Promise.all([
@@ -38,8 +37,34 @@ async function bootMap() {
         return;
     }
 
-    mapDistricts = csvRows.filter(function (r) { return r.district; });
-    console.log('[Map] Loaded', india.features.length, 'GeoJSON features +', mapDistricts.length, 'CSV rows');
+    // Aggregate district metrics → state-level averages
+    const stateAgg = {};
+    csvRows.forEach(function (r) {
+        const state = (r.state_clean || '').toLowerCase().trim();
+        if (!state) return;
+        if (!stateAgg[state]) stateAgg[state] = { count: 0, OPI: 0, coverage_gap: 0, youth_pct: 0, log_update_load: 0 };
+        const s = stateAgg[state];
+        s.count++;
+        s.OPI            += parseFloat(r.OPI) || 0;
+        s.coverage_gap   += parseFloat(r.coverage_gap) || 0;
+        s.youth_pct      += parseFloat(r.youth_pct) || 0;
+        s.log_update_load += parseFloat(r.log_update_load) || 0;
+    });
+
+    Object.keys(stateAgg).forEach(function (state) {
+        const s = stateAgg[state];
+        stateMetrics[state] = {
+            OPI:             s.OPI / s.count,
+            coverage_gap:    s.coverage_gap / s.count,
+            youth_pct:       s.youth_pct / s.count,
+            log_update_load: s.log_update_load / s.count
+        };
+    });
+
+    console.log('[Map] Aggregated', Object.keys(stateMetrics).length, 'states from', csvRows.length, 'district rows');
+    console.log('[Map] GeoJSON has', india.features.length, 'state features');
+    console.log('[Map] Sample state names (GeoJSON):', india.features.slice(0,3).map(function(f){ return f.properties.ST_NM; }));
+    console.log('[Map] Sample state names (CSV):', Object.keys(stateMetrics).slice(0,3));
 
     renderMap(container, india);
     initFilters();
@@ -47,7 +72,7 @@ async function bootMap() {
 
 // ─── Render ─────────────────────────────────────────────────────────────────
 function renderMap(container, india) {
-    const W = 800, H = 600; // fixed logical size — same as reference repo
+    const W = 800, H = 600;
 
     d3.select('#india-map').selectAll('svg').remove();
 
@@ -60,67 +85,54 @@ function renderMap(container, india) {
 
     mapG = svg.append('g');
 
+    // Exact reference repo projection pattern
     const projection = d3.geoMercator().fitSize([W, H], india);
     const path       = d3.geoPath().projection(projection);
 
-    mapG.selectAll('.district-path')
+    mapG.selectAll('.state-path')
         .data(india.features)
         .enter()
         .append('path')
-        .attr('class', 'district-path')
-        .attr('d', path)
+        .attr('class', 'district-path state-path')
+        .attr('d',     path)
         .attr('fill',         function (d) { return colorFor(d); })
-        .attr('stroke',       '#ffffff')
-        .attr('stroke-width', 0.3)
+        .attr('stroke',       '#0f172a')
+        .attr('stroke-width', 1.5)
         .style('cursor', 'pointer')
         .on('mouseover', function (event, d) {
             d3.select(this)
-                .transition().duration(120)
-                .attr('stroke-width', 1.5)
+                .transition().duration(150)
                 .attr('stroke', '#fff')
-                .style('filter', 'brightness(1.25)');
-            showStats(districtName(d).toLowerCase());
+                .attr('stroke-width', 3)
+                .style('filter', 'brightness(1.3)');
+            showStats(d.properties.ST_NM);
         })
         .on('mouseout', function () {
             d3.select(this)
                 .transition().duration(200)
-                .attr('stroke-width', 0.3)
-                .attr('stroke', '#ffffff')
+                .attr('stroke', '#0f172a')
+                .attr('stroke-width', 1.5)
                 .style('filter', 'brightness(1)');
             showStats(null);
-        })
-        .on('click', function (event, d) {
-            navigateToDistrict(districtName(d));
         });
 
-    // Zoom (reference repo pattern)
+    // Zoom — reference repo pattern
     svg.call(
         d3.zoom()
-            .scaleExtent([1, 10])
+            .scaleExtent([1, 8])
             .on('zoom', function (event) { mapG.attr('transform', event.transform); })
     );
 
-    console.log('[Map] Rendered', india.features.length, 'district paths.');
+    console.log('[Map] Rendered', india.features.length, 'state paths.');
 }
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
-function districtName(d) {
-    // GeoJSON uses 'District' (capital D) — verified from file
-    return d.properties.District
-        || d.properties.district
-        || d.properties.dtname
-        || d.properties.NAME_2
-        || '';
-}
-
+// ─── Color ──────────────────────────────────────────────────────────────────
 function colorFor(d) {
-    const name = districtName(d).toLowerCase().trim();
-    const row  = mapDistricts.find(function (r) {
-        return (r.district || '').toLowerCase().trim() === name;
-    });
-    if (!row) return '#475569'; // visible grey for no-data districts
+    const stName = (d.properties.ST_NM || '').toLowerCase().trim();
+    const data   = stateMetrics[stName];
+    if (!data) return '#475569'; // visible grey for no-data states
 
-    const val = parseFloat(row[currentFilter]) || 0;
+    const val = data[currentFilter] || 0;
 
     const scales = {
         'OPI': d3.scaleThreshold()
@@ -143,40 +155,38 @@ function colorFor(d) {
 
 function recolor() {
     if (!mapG) return;
-    d3.selectAll('.district-path')
+    d3.selectAll('.state-path')
         .transition().duration(400)
-        .attr('fill', function (d) { return colorFor(d); });
+        .attr('fill', colorFor);
 }
 
-function showStats(dName) {
-    const selEl  = document.getElementById('selected-state');
-    const valEl  = document.getElementById('metric-value');
-    const lblEl  = document.getElementById('metric-label');
-    const priEl  = document.getElementById('priority-level');
-
+// ─── Stats Panel ────────────────────────────────────────────────────────────
+function showStats(stName) {
+    const selEl = document.getElementById('selected-state');
+    const valEl = document.getElementById('metric-value');
+    const lblEl = document.getElementById('metric-label');
+    const priEl = document.getElementById('priority-level');
     if (!selEl) return;
 
-    if (!dName) {
+    if (!stName) {
         selEl.textContent = 'India Hub';
         if (valEl) valEl.textContent = '--';
-        if (lblEl) lblEl.textContent = 'Hover a district';
+        if (lblEl) lblEl.textContent = 'Hover a state';
         if (priEl) { priEl.textContent = 'Standard'; priEl.style.color = 'var(--primary)'; }
         return;
     }
 
-    const row = mapDistricts.find(function (r) {
-        return (r.district || '').toLowerCase().trim() === dName;
-    });
-    if (!row) return;
+    const key  = stName.toLowerCase().trim();
+    const data = stateMetrics[key];
 
     const labels = {
-        'OPI':             'Priority Hub Score',
-        'youth_pct':       'Youth Opportunity %',
-        'coverage_gap':    'Coverage Gap',
-        'log_update_load': 'Update Load (Log)'
+        'OPI':             'Priority Hub Score (Avg)',
+        'youth_pct':       'Youth Opportunity % (Avg)',
+        'coverage_gap':    'Coverage Gap (Avg)',
+        'log_update_load': 'Update Load (Avg)'
     };
 
-    let val      = parseFloat(row[currentFilter]) || 0;
+    let val      = data ? (data[currentFilter] || 0) : 0;
     let display  = val.toFixed(1);
     let priority = 'Standard';
 
@@ -191,12 +201,12 @@ function showStats(dName) {
         else if (val > 0.2) priority = 'Medium';
     }
 
-    selEl.textContent = row.district;
-    if (valEl) valEl.textContent = display;
+    selEl.textContent = stName;
+    if (valEl) valEl.textContent = data ? display : '--';
     if (lblEl) lblEl.textContent = labels[currentFilter] || currentFilter;
     if (priEl) {
-        priEl.textContent  = priority;
-        priEl.style.color  = priority === 'Critical' ? '#dc2626' : priority === 'High' ? '#f59e0b' : 'var(--primary)';
+        priEl.textContent = priority;
+        priEl.style.color = priority === 'Critical' ? '#dc2626' : priority === 'High' ? '#f59e0b' : 'var(--primary)';
     }
 }
 
@@ -227,24 +237,22 @@ function setupExpansion() {
 function loadCSVLocal(url) {
     return new Promise(function (resolve, reject) {
         Papa.parse(url, {
-            download:     true,
-            header:       true,
-            dynamicTyping: true,
-            skipEmptyLines: true,
-            complete: function (r) { resolve(r.data); },
-            error:    function (e) { reject(e); }
+            download:        true,
+            header:          true,
+            dynamicTyping:   true,
+            skipEmptyLines:  true,
+            complete:  function (r) { resolve(r.data); },
+            error:     function (e) { reject(e); }
         });
     });
 }
 
-// ─── Error UI ───────────────────────────────────────────────────────────────
 function errorHTML(err) {
     return '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:white;">' +
         '<i class="fa-solid fa-triangle-exclamation fa-2x" style="color:#ef4444"></i>' +
         '<p style="font-weight:700;">Map data unavailable</p>' +
-        '<p style="font-size:0.75rem;opacity:0.5;">' + String(err) + '</p>' +
-        '</div>';
+        '<p style="font-size:0.75rem;opacity:0.5;">' + String(err) + '</p></div>';
 }
 
-// ─── Compatibility: main.js lifecycle hook (no-op — map is self-contained) ──
-window.onDashboardDataLoaded = function () { /* intentionally empty */ };
+// Compatibility stub
+window.onDashboardDataLoaded = function () {};
