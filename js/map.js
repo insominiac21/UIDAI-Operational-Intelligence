@@ -89,6 +89,11 @@ function initIndiaMap() {
 
         console.log('Geospatial Hub: ' + india.features.length + ' district nodes rendered.');
 
+        // Race condition fix: if CSV data arrived before GeoJSON, color now
+        if (State.districts && State.districts.length > 0) {
+            updateMapColors();
+        }
+
     }).catch(function(error) {
         console.error('Geospatial Engine: GeoJSON load failed —', error);
         container.innerHTML = `
@@ -121,7 +126,7 @@ function getColorForDistrict(d, filter) {
     const csvData = State.districts.find(function(sd) {
         return (sd.district || '').toLowerCase() === dName;
     });
-    if (!csvData) return '#1e293b'; // Dark slate for unmatched districts
+    if (!csvData) return '#475569'; // Visible slate — no CSV match
 
     const val = parseFloat(csvData[filter]) || 0;
 
