@@ -150,13 +150,12 @@
                     <!-- Layer 2: D3 Engine Target -->
                     <div id="india-map"></div>
 
-                    <!-- Layer 3: Dynamic Legend -->
-                    <div class="map-legend">
-                        <div class="legend-item"><div class="legend-color" style="background:#dc2626"></div> Critical Priority</div>
-                        <div class="legend-item"><div class="legend-color" style="background:#f59e0b"></div> High Stress</div>
-                        <div class="legend-item"><div class="legend-color" style="background:#3b82f6"></div> Standard</div>
+                    <!-- Layer 3: Dynamic Legend — populated by map.js -->
+                    <div class="map-legend" id="map-legend">
+                        <div style="font-size:0.6rem; font-weight:800; opacity:0.6; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em;">Legend</div>
                     </div>
                 </div>
+
 
                 <!-- Intelligence Side Panel -->
                 <div class="side-intel-container">
@@ -173,9 +172,16 @@
                         <div class="stat-label">Tactical Status</div>
                     </div>
 
+                    <div class="stat-card" style="margin-top: 15px; background: #f0fdfa; border: 1px solid var(--primary);">
+                        <div class="stat-value" id="national-avg-value" style="color:var(--primary); font-size:1.4rem;">--</div>
+                        <div class="stat-label" id="national-avg-label">National Avg</div>
+                    </div>
+
+                    <div id="vs-national" style="margin-top:12px; font-size:0.75rem; font-weight:700; text-align:center; display:none;"></div>
+
                     <div style="margin-top:auto; padding-top: 2rem; border-top: 1px solid var(--border);">
                         <p style="font-size: 0.8rem; opacity: 0.6; line-height: 1.5;">
-                            <i class="fa-solid fa-info-circle"></i> Hover over any regional node to extract tactical metrics. Click to pivot to the detailed district profile.
+                            <i class="fa-solid fa-info-circle"></i> Hover a state for metrics vs national average.
                         </p>
                     </div>
                 </div>

@@ -11,6 +11,8 @@
 let currentFilter  = 'OPI';
 let mapG           = null;
 let stateMetrics   = {}; // { stateName_lower: { OPI, coverage_gap, youth_pct, log_update_load } }
+let nationalAvg    = {}; // national averages per metric
+let quantileScales = {}; // data-driven color scales
 
 const DISTRICT_CSV  = './data/uidai_district_model_table.csv';
 const GEOJSON_URL   = 'india-states.json'; // reference repo file — confirmed working
@@ -63,8 +65,31 @@ async function bootMap() {
 
     console.log('[Map] Aggregated', Object.keys(stateMetrics).length, 'states from', csvRows.length, 'district rows');
     console.log('[Map] GeoJSON has', india.features.length, 'state features');
-    console.log('[Map] Sample state names (GeoJSON):', india.features.slice(0,3).map(function(f){ return f.properties.ST_NM; }));
-    console.log('[Map] Sample state names (CSV):', Object.keys(stateMetrics).slice(0,3));
+
+    // Compute national averages
+    const allMetrics = ['OPI', 'coverage_gap', 'youth_pct', 'log_update_load'];
+    allMetrics.forEach(function (m) {
+        const vals = Object.values(stateMetrics).map(function (s) { return s[m]; }).filter(function(v){ return v > 0; });
+        nationalAvg[m] = vals.length ? vals.reduce(function(a,b){return a+b;},0) / vals.length : 0;
+    });
+
+    // Build data-driven quantile thresholds for richer colors
+    allMetrics.forEach(function (m) {
+        const vals = Object.values(stateMetrics).map(function (s) { return s[m]; }).filter(function(v){ return v > 0; }).sort(function(a,b){return a-b;});
+        const q = function(p) { return vals[Math.floor(p * (vals.length - 1))]; };
+        quantileScales[m] = d3.scaleThreshold()
+            .domain([q(0.25), q(0.5), q(0.75)])
+            .range(['#3b82f6', '#6366f1', '#f59e0b', '#dc2626']);
+    });
+    // Coverage gap gets a green→red scale
+    const cvVals = Object.values(stateMetrics).map(function(s){return s.coverage_gap;}).filter(function(v){return v>0;}).sort(function(a,b){return a-b;});
+    const qCv = function(p) { return cvVals[Math.floor(p*(cvVals.length-1))]; };
+    quantileScales['coverage_gap'] = d3.scaleThreshold()
+        .domain([qCv(0.25), qCv(0.5), qCv(0.75)])
+        .range(['#10b981', '#f59e0b', '#ef4444', '#dc2626']);
+
+    updateNationalAvgDisplay();
+    updateLegend();
 
     renderMap(container, india);
     initFilters();
@@ -130,27 +155,10 @@ function renderMap(container, india) {
 function colorFor(d) {
     const stName = (d.properties.ST_NM || '').toLowerCase().trim();
     const data   = stateMetrics[stName];
-    if (!data) return '#475569'; // visible grey for no-data states
+    if (!data) return '#475569';
 
-    const val = data[currentFilter] || 0;
-
-    const scales = {
-        'OPI': d3.scaleThreshold()
-            .domain([25, 50, 75])
-            .range(['#3b82f6', '#6366f1', '#f59e0b', '#dc2626']),
-        'coverage_gap': d3.scaleThreshold()
-            .domain([0.3, 0.5, 0.7])
-            .range(['#10b981', '#f59e0b', '#ef4444', '#dc2626']),
-        'youth_pct': d3.scaleThreshold()
-            .domain([15, 25, 40])
-            .range(['#6366f1', '#8b5cf6', '#a855f7', '#d946ef']),
-        'log_update_load': d3.scaleThreshold()
-            .domain([2, 3, 4])
-            .range(['#3b82f6', '#f59e0b', '#ef4444', '#dc2626'])
-    };
-
-    const scale = scales[currentFilter] || scales['OPI'];
-    return scale(val);
+    const scale = quantileScales[currentFilter];
+    return scale ? scale(data[currentFilter] || 0) : '#475569';
 }
 
 function recolor() {
@@ -158,9 +166,62 @@ function recolor() {
     d3.selectAll('.state-path')
         .transition().duration(400)
         .attr('fill', colorFor);
+    updateNationalAvgDisplay();
 }
 
-// ─── Stats Panel ────────────────────────────────────────────────────────────
+function updateNationalAvgDisplay() {
+    const avgEl  = document.getElementById('national-avg-value');
+    const lblEl  = document.getElementById('national-avg-label');
+    if (!avgEl || !nationalAvg[currentFilter] == null) return;
+
+    const labels = {
+        'OPI':             'National Avg OPI',
+        'youth_pct':       'National Avg Youth %',
+        'coverage_gap':    'National Avg Gap',
+        'log_update_load': 'National Avg Load'
+    };
+
+    let val = nationalAvg[currentFilter] || 0;
+    let display = currentFilter === 'coverage_gap' ? (val * 100).toFixed(1) + '%' : val.toFixed(1);
+    avgEl.textContent = display;
+    if (lblEl) lblEl.textContent = labels[currentFilter] || 'National Avg';
+}
+
+function updateLegend() {
+    const el = document.getElementById('map-legend');
+    if (!el) return;
+    const scale = quantileScales[currentFilter];
+    if (!scale) return;
+
+    const isCov = currentFilter === 'coverage_gap';
+    const fmt   = function (v) { return isCov ? (v * 100).toFixed(0) + '%' : parseFloat(v).toFixed(1); };
+    const domain = scale.domain();  // [Q25, Q50, Q75]
+    const range  = scale.range();   // 4 colors
+
+    const labelMap = {
+        'OPI':             ['Low Priority', 'Moderate', 'High', 'Critical'],
+        'youth_pct':       ['Low Youth',    'Moderate', 'High Youth', 'Extreme'],
+        'coverage_gap':    ['Well Covered', 'Moderate Gap', 'High Gap', 'Critical'],
+        'log_update_load': ['Low Load',     'Moderate', 'High Load', 'Peak']
+    };
+    const lbl = labelMap[currentFilter] || ['Low', 'Medium', 'High', 'Critical'];
+
+    const bounds = [
+        { color: range[0], label: lbl[0], range: '< '      + fmt(domain[0]) },
+        { color: range[1], label: lbl[1], range: fmt(domain[0]) + ' \u2013 ' + fmt(domain[1]) },
+        { color: range[2], label: lbl[2], range: fmt(domain[1]) + ' \u2013 ' + fmt(domain[2]) },
+        { color: range[3], label: lbl[3], range: '> '      + fmt(domain[2]) }
+    ];
+
+    const header = '<div style="font-size:0.6rem;font-weight:800;opacity:0.6;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Legend</div>';
+    el.innerHTML = header + bounds.map(function (b) {
+        return '<div class="legend-item" style="margin-bottom:5px;">' +
+            '<div class="legend-color" style="background:' + b.color + ';border-radius:3px;"></div>' +
+            '<div><div style="font-size:0.68rem;font-weight:700;">' + b.label + '</div>' +
+            '<div style="font-size:0.58rem;opacity:0.65;">' + b.range + '</div></div></div>';
+    }).join('');
+}
+
 function showStats(stName) {
     const selEl = document.getElementById('selected-state');
     const valEl = document.getElementById('metric-value');
@@ -208,6 +269,18 @@ function showStats(stName) {
         priEl.textContent = priority;
         priEl.style.color = priority === 'Critical' ? '#dc2626' : priority === 'High' ? '#f59e0b' : 'var(--primary)';
     }
+
+    // vs national avg badge
+    const vsEl = document.getElementById('vs-national');
+    if (vsEl && data && nationalAvg[currentFilter]) {
+        const diff = val - nationalAvg[currentFilter];
+        const pct  = ((diff / nationalAvg[currentFilter]) * 100).toFixed(1);
+        const arrow = diff >= 0 ? '▲' : '▼';
+        const color = diff >= 0 ? '#dc2626' : '#10b981';
+        vsEl.style.display = 'block';
+        vsEl.style.color   = color;
+        vsEl.textContent   = arrow + ' ' + Math.abs(parseFloat(pct)) + '% vs national avg (' + (nationalAvg[currentFilter] || 0).toFixed(1) + ')';
+    }
 }
 
 // ─── Filters ────────────────────────────────────────────────────────────────
@@ -218,7 +291,10 @@ function initFilters() {
             this.classList.add('active');
             currentFilter = this.dataset.filter;
             recolor();
+            updateLegend();
             showStats(null);
+            const vsEl = document.getElementById('vs-national');
+            if (vsEl) vsEl.style.display = 'none';
         });
     });
 }
