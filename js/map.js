@@ -1,148 +1,183 @@
 /**
- * map.js - Absolute Engine Restoration (v20)
- * -----------------------------------------
- * Identical D3 logic to reference_repo/app.js.
- * Guaranteed Vercel/GitHub Pages path resolution.
+ * map.js - Geospatial Engine v24 (Reference Parity)
+ * --------------------------------------------------
+ * Mirrors the reference_repo/app.js .then() pattern exactly.
+ * GeoJSON served from project ROOT to bypass Vercel routing rewrites.
+ * Data is joined inside the .then() callback — zero race conditions.
  */
 
 let currentFilter = 'OPI';
+let mapG = null; // Global ref for filter updates (ref repo pattern)
 
 /**
- * Hub Convergence (Restoration Init)
+ * Primary Map Init — mirrors reference repo's initIndiaMap exactly.
+ * Uses .then() so the map only renders AFTER GeoJSON is fully parsed.
  */
-async function initIndiaMap() {
+function initIndiaMap() {
     const container = document.getElementById('india-map');
     if (!container) return;
 
-    const width = container.clientWidth;
-    const height = 600;
+    const width = container.clientWidth || 800;
+    const height = container.clientHeight || 600;
 
-    // Reset SVG
+    // Reset SVG (clean slate on re-init)
     d3.select('#india-map').selectAll('svg').remove();
+
     const svg = d3.select('#india-map')
         .append('svg')
         .attr('width', width)
         .attr('height', height);
 
-    const g = svg.append('g');
+    window.mapSvg = svg;
+    mapG = svg.append('g');
 
-    try {
-        console.log("Synthesizing Absolute Geospatial Hub (v22 Stabilization)...");
-        // Vercel-compatible relative pathing
-        const india = await d3.json('data/india_district.json');
+    // ROOT-LEVEL fetch (mirrors reference repo — bypasses Vercel routing)
+    d3.json('india_district.json').then(function(india) {
+        window.indiaGeoJSON = india; // Save for filter updates
 
-
-
-        // Exact Parity: d3.geoMercator().fitSize()
         const projection = d3.geoMercator().fitSize([width, height], india);
+        window.mapProjection = projection;
         const path = d3.geoPath().projection(projection);
 
-        // Render District Nodes
-        g.selectAll('.district-path')
+        // Join GeoJSON features with CSV data and draw paths
+        mapG.selectAll('.district-path')
             .data(india.features)
             .enter()
             .append('path')
             .attr('d', path)
             .attr('class', 'district-path')
-            .attr('fill', d => getColorForDistrict(d, currentFilter))
+            .attr('fill', function(d) { return getColorForDistrict(d, currentFilter); })
             .attr('stroke', '#0f172a')
             .attr('stroke-width', 0.5)
             .style('cursor', 'pointer')
-            .on('mouseover', function (event, d) {
-                const dName = (d.properties.district || d.properties.DISTRICT || d.properties.dtname || "").toLowerCase();
+            .on('mouseover', function(event, d) {
+                const dName = getDistrictName(d).toLowerCase();
                 d3.select(this)
                     .transition().duration(150)
                     .attr('stroke', '#fff')
                     .attr('stroke-width', 2)
-                    .style('filter', 'brightness(1.15)');
-
+                    .style('filter', 'brightness(1.2)');
                 updateMapStats(dName);
             })
-            .on('mouseout', function () {
+            .on('mouseout', function() {
                 d3.select(this)
                     .transition().duration(200)
                     .attr('stroke', '#0f172a')
                     .attr('stroke-width', 0.5)
                     .style('filter', 'brightness(1)');
-
                 updateMapStats('India');
             })
-            .on('click', function (event, d) {
-                const dName = (d.properties.district || d.properties.DISTRICT || d.properties.dtname || "");
+            .on('click', function(event, d) {
+                const dName = getDistrictName(d);
                 navigateToDistrict(dName);
             });
 
-        // Exact Parity: Zoom Behavior
+        // Zoom (ref repo pattern)
         const zoom = d3.zoom()
             .scaleExtent([1, 10])
-            .on('zoom', (event) => g.attr('transform', event.transform));
+            .on('zoom', function(event) {
+                mapG.attr('transform', event.transform);
+            });
 
         svg.call(zoom);
 
-    } catch (error) {
-        console.error("Geospatial Sync Critical Failure:", error);
-        container.innerHTML = `<div class='glass-panel text-center' style='padding:4rem;'><i class='fa-solid fa-triangle-exclamation fa-2x' style='color:var(--danger)'></i><p style='margin-top:15px; font-weight:700;'>Telemetry Data Link Broken: 404/Null</p><p style='font-size:0.8rem; opacity:0.6;'>Critical error while retrieving data/india_district.json</p></div>`;
-    }
+        console.log('Geospatial Hub: ' + india.features.length + ' district nodes rendered.');
+
+    }).catch(function(error) {
+        console.error('Geospatial Engine: GeoJSON load failed —', error);
+        container.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:12px;color:white;">
+                <i class="fa-solid fa-triangle-exclamation fa-2x" style="color:#ef4444"></i>
+                <p style="font-weight:700;">Map data unavailable</p>
+                <p style="font-size:0.75rem;opacity:0.5;">india_district.json not found at root</p>
+            </div>`;
+    });
 }
 
 /**
- * Reference Color Scaling (Threshold Spec)
+ * Resolve district name from GeoJSON feature properties.
+ * Checks known key variants to guarantee a match.
+ */
+function getDistrictName(d) {
+    return d.properties.district
+        || d.properties.DISTRICT
+        || d.properties.dtname
+        || d.properties.NAME_2
+        || '';
+}
+
+/**
+ * Color scaling — threshold-based, mirrors reference repo pattern.
  */
 function getColorForDistrict(d, filter) {
-    const dName = (d.properties.district || d.properties.DISTRICT || d.properties.dtname || "").toLowerCase();
-    const csvData = State.districts.find(sd => (sd.district || "").toLowerCase() === dName);
-    if (!csvData) return '#cbd5e1';
+    const dName = getDistrictName(d).toLowerCase();
+    const csvData = State.districts.find(function(sd) {
+        return (sd.district || '').toLowerCase() === dName;
+    });
+    if (!csvData) return '#1e293b'; // Dark slate for unmatched districts
 
     const val = parseFloat(csvData[filter]) || 0;
-    if (val === 0) return '#cbd5e1';
 
     let colorScale;
     if (filter === 'OPI') {
         colorScale = d3.scaleThreshold()
             .domain([25, 50, 75])
-            .range(['#3b82f6', '#6366f1', '#8b5cf6', '#d946ef']);
+            .range(['#3b82f6', '#8b5cf6', '#f59e0b', '#dc2626']);
     } else if (filter === 'coverage_gap') {
         colorScale = d3.scaleThreshold()
             .domain([0.3, 0.5, 0.7])
             .range(['#10b981', '#f59e0b', '#ef4444', '#dc2626']);
-    } else {
+    } else if (filter === 'youth_pct') {
         colorScale = d3.scaleThreshold()
             .domain([15, 25, 40])
-            .range(['#3b82f6', '#8b5cf6', '#a855f7', '#c026d3']);
+            .range(['#6366f1', '#8b5cf6', '#a855f7', '#d946ef']);
+    } else {
+        colorScale = d3.scaleThreshold()
+            .domain([2, 3, 4])
+            .range(['#3b82f6', '#f59e0b', '#ef4444', '#dc2626']);
     }
 
     return colorScale(val);
 }
 
 /**
- * Map Intelligence Panel
+ * Update filter colors — mirrors reference repo's updateMapColors()
+ */
+function updateMapColors() {
+    d3.selectAll('.district-path')
+        .transition().duration(500)
+        .attr('fill', function(d) { return getColorForDistrict(d, currentFilter); });
+    updateMapStats('India');
+}
+
+/**
+ * Side panel telemetry update
  */
 function updateMapStats(dName) {
     if (dName === 'India') {
         document.getElementById('selected-state').textContent = 'India Hub';
-        document.getElementById('metric-value').textContent = '--';
-        document.getElementById('metric-label').textContent = 'Node Data Selection';
+        if (document.getElementById('metric-value')) document.getElementById('metric-value').textContent = '--';
+        if (document.getElementById('metric-label')) document.getElementById('metric-label').textContent = 'Hover a district';
         document.getElementById('priority-level').textContent = 'Standard';
         document.getElementById('priority-level').style.color = 'var(--primary)';
         return;
     }
 
-    const csvData = State.districts.find(sd => (sd.district || "").toLowerCase() === dName);
+    const csvData = State.districts.find(function(sd) {
+        return (sd.district || '').toLowerCase() === dName;
+    });
     if (!csvData) return;
 
-    let priority = 'Standard';
-    let val = parseFloat(csvData[currentFilter]) || 0;
-
-    // v20: Simple English Metric Labels
-    let labels = {
+    const labels = {
         'OPI': 'Priority Hub Score',
-        'youth_pct': 'Youth Opportunity % (Schools)',
-        'coverage_gap': 'Un-enrolled Population Gap',
-        'log_update_load': 'Technical Center Stress'
+        'youth_pct': 'Youth Opportunity %',
+        'coverage_gap': 'Coverage Gap',
+        'log_update_load': 'Update Load (Log)'
     };
 
-    let label = labels[currentFilter] || currentFilter.replace('_', ' ').toUpperCase();
+    let val = parseFloat(csvData[currentFilter]) || 0;
     let displayVal = val.toFixed(1);
+    let priority = 'Standard';
 
     if (currentFilter === 'OPI') {
         if (val > 75) priority = 'Critical';
@@ -152,33 +187,29 @@ function updateMapStats(dName) {
         displayVal = (val * 100).toFixed(1) + '%';
         if (val > 0.6) priority = 'Critical';
         else if (val > 0.4) priority = 'High';
+        else if (val > 0.2) priority = 'Medium';
     }
 
     document.getElementById('selected-state').textContent = csvData.district;
-    document.getElementById('metric-value').textContent = displayVal;
-    document.getElementById('metric-label').textContent = label;
+    if (document.getElementById('metric-value')) document.getElementById('metric-value').textContent = displayVal;
+    if (document.getElementById('metric-label')) document.getElementById('metric-label').textContent = labels[currentFilter] || currentFilter;
     document.getElementById('priority-level').textContent = priority;
 
-    const color = (priority === 'Critical') ? '#dc2626' : (priority === 'High' ? '#f59e0b' : 'var(--primary)');
+    const color = priority === 'Critical' ? '#dc2626' : priority === 'High' ? '#f59e0b' : 'var(--primary)';
     document.getElementById('priority-level').style.color = color;
 }
 
 /**
- * UI State Binding
+ * Filter button binding
  */
 function initFilters() {
     const filterButtons = document.querySelectorAll('.filter-btn');
-    filterButtons.forEach(btn => {
-        btn.addEventListener('click', function () {
-            filterButtons.forEach(b => b.classList.remove('active'));
+    filterButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            filterButtons.forEach(function(b) { b.classList.remove('active'); });
             this.classList.add('active');
             currentFilter = this.dataset.filter;
-
-            d3.selectAll('.district-path')
-                .transition().duration(500)
-                .attr('fill', d => getColorForDistrict(d, currentFilter));
-
-            updateMapStats('India');
+            updateMapColors();
         });
     });
 }
@@ -186,8 +217,7 @@ function initFilters() {
 function setupExpansion() {
     const expandBtn = document.getElementById('zoom-expand');
     if (!expandBtn) return;
-
-    expandBtn.onclick = () => {
+    expandBtn.onclick = function() {
         const wrapper = document.getElementById('map-wrapper-main');
         if (document.fullscreenElement) {
             document.exitFullscreen();
@@ -197,8 +227,8 @@ function setupExpansion() {
     };
 }
 
-// Lifecycle Sync
-window.onDashboardDataLoaded = () => {
+// Lifecycle — fires after CSV data is ready in State
+window.onDashboardDataLoaded = function() {
     initIndiaMap();
     initFilters();
     setupExpansion();
