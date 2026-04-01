@@ -105,7 +105,7 @@ function renderArchetypeProfiles() {
             .map(function(d) { return d.district; });
 
         const topNodeBadges = topNodes.map(function(name) {
-            return '<span class="opi-badge" style="font-size:0.65rem;">' + name + '</span>';
+            return '<span class="opi-badge" style="font-size:0.65rem; cursor:pointer;" onclick="navigateToDistrict(\'' + name.replace(/'/g, "\\'") + '\')">' + name + '</span>';
         }).join('');
 
         const opiWidth = Math.min(parseFloat(cluster.avg_opi) || 50, 100);

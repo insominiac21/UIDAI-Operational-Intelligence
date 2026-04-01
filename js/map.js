@@ -96,10 +96,11 @@ function initIndiaMap() {
 
 /**
  * Resolve district name from GeoJSON feature properties.
- * Checks known key variants to guarantee a match.
+ * GeoJSON uses 'District' (capital D) — verified from india_district.json.
  */
 function getDistrictName(d) {
-    return d.properties.district
+    return d.properties.District    // ← actual key in our GeoJSON
+        || d.properties.district
         || d.properties.DISTRICT
         || d.properties.dtname
         || d.properties.NAME_2
@@ -227,9 +228,20 @@ function setupExpansion() {
     };
 }
 
-// Lifecycle — fires after CSV data is ready in State
-window.onDashboardDataLoaded = function() {
-    initIndiaMap();
-    initFilters();
+
+// -------------------------------------------------------
+// Lifecycle (Reference Parity):
+// 1. Geometry draws immediately on DOMContentLoaded (no CSV dependency)
+// 2. Colors + filters apply once CSV data is ready
+// -------------------------------------------------------
+document.addEventListener('DOMContentLoaded', function() {
+    initIndiaMap();   // draw shapes immediately — neutral fill until data arrives
     setupExpansion();
+});
+
+// Called by main.js after CSV loads — recolors existing paths, no re-render
+window.onDashboardDataLoaded = function() {
+    updateMapColors();
+    initFilters();
 };
+
