@@ -17,16 +17,22 @@ function initIndiaMap() {
     const container = document.getElementById('india-map');
     if (!container) return;
 
-    const width = container.clientWidth || 800;
-    const height = container.clientHeight || 600;
+    // Use fixed dimensions — reference repo pattern.
+    // clientWidth/clientHeight is unreliable before flex layout settles
+    // and causes fitSize() to produce degenerate projections where every
+    // district fills the entire SVG container.
+    const width = 800;
+    const height = 600;
 
     // Reset SVG (clean slate on re-init)
     d3.select('#india-map').selectAll('svg').remove();
 
     const svg = d3.select('#india-map')
         .append('svg')
-        .attr('width', width)
-        .attr('height', height);
+        .attr('width', '100%')
+        .attr('height', '100%')
+        .attr('viewBox', '0 0 ' + width + ' ' + height)
+        .attr('preserveAspectRatio', 'xMidYMid meet');
 
     window.mapSvg = svg;
     mapG = svg.append('g');
