@@ -13,9 +13,10 @@ The **UIDAI Operational Intelligence Dashboard** transforms raw administrative a
 ## 🛠 Tech Stack
 - **Architecture**: Static Web Product (Multi-page).
 - **Core**: HTML5, Vanilla JavaScript (ES6+), CSS3.
-- **Geospatial**: Leaflet.js with simplified district GeoJSON layers.
+- **Geospatial**: D3.js paired with a self-contained Promise.all module for zero-race-condition Vercel rendering. Features dynamic, data-driven quantile choropleths and state-level aggregation fallbacks.
 - **Data Engine**: PapaParse for high-performance client-side CSV processing.
 - **Analysis Source**: Python/K-Means Clustering via the `uidai-operational-intelligence-district-clustering.ipynb` analysis pipeline.
+
 
 ## 📂 Project Structure
 ```text

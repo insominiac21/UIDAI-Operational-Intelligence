@@ -190,6 +190,26 @@
                     <p style="margin-top:12px; font-size:0.95rem; line-height:1.6;">
                         Comparing KMeans, GMM, and HDBSCAN, the <strong>KMeans</strong> model was selected for its operational stability. Every district is assigned a permanent <strong>Intelligence Archetype</strong> (e.g., High-Stress, Youth-Gap) based on its feature centroid.
                     </p>
+                    <div class="kpi-label" style="margin-top: 15px; color:var(--primary)">K-Means Column Weights</div>
+                    <ul class="list-premium" style="margin-top:10px; font-size:0.85rem;">
+                        <li><strong>OPI Score (0.45):</strong> Primary driver of cluster assignment to group districts by overall urgency.</li>
+                        <li><strong>Coverage Gap (0.25):</strong> Emphasizes un-enrolled populations.</li>
+                        <li><strong>Youth Percentage (0.20):</strong> Separates educational outreach targets from standard nodes.</li>
+                        <li><strong>Update Load (0.10):</strong> Determines if stress is from new enrollments vs demographic corrections.</li>
+                    </ul>
+                </div>
+
+                <!-- Dataset Sources Deep Dive -->
+                <div class="glass-panel method-card">
+                    <div class="kpi-label" style="color:var(--secondary)">Data Provenance</div>
+                    <h3>Dataset Sources & Preprocessing</h3>
+                    <ul class="list-premium" style="margin-top:15px; font-size:0.85rem;">
+                        <li><strong>UIDAI Enrolment Data:</strong> Source for new foundational Aadhaar generation metrics.</li>
+                        <li><strong>UIDAI Update Data:</strong> Source for demographic and biometric correction patterns.</li>
+                    </ul>
+                    <p style="margin-top:10px; font-size:0.9rem; line-height:1.6;">
+                        <strong>Preprocessing Logic:</strong> Raw datasets exhibited severe nomenclature divergence (e.g., 'A.N. Islands' vs 'Andaman'). We utilized string-distance matching (Levenshtein) followed by manual taxonomy alignment. Missing values were imputed via state-level median, and outliers capping was applied at the 99th percentile to prevent centroid skew in the K-Means space.
+                    </p>
                 </div>
 
                 <div class="glass-panel method-card">
